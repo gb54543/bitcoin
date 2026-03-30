@@ -320,3 +320,16 @@ select {
   transform: translateY(-3px);
   box-shadow: 0 0 25px rgba(0,0,0,0.8);
 }
+select {
+  appearance: none;
+  background: #020617;
+  border: 1px solid #1f2937;
+  padding: 12px;
+  border-radius: 10px;
+  color: #fff;
+}
+#preco {
+  font-size: 32px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
