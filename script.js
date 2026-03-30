@@ -138,10 +138,13 @@ window.addEventListener("load", () => {
   iniciarTimer();
 
   // tenta criar gráfico até carregar
-const intervaloGrafico = setInterval(() => {
+function esperarGrafico() {
   if (typeof TradingView !== "undefined") {
     criarGrafico();
-    clearInterval(intervaloGrafico);
+  } else {
+    setTimeout(esperarGrafico, 500);
+  }
+}
   }
 }, 500);
   }
