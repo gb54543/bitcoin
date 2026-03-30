@@ -1,112 +1,61 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Crypto Analyzer X</title>
+  <title>Crypto Analyzer</title>
 
   <link rel="stylesheet" href="style.css">
-
-  <!-- Ícones -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://s3.tradingview.com/tv.js"></script>
 </head>
 
 <body>
 
-<header>
-  <h1><i class="fa-solid fa-chart-line"></i> Crypto Analyzer X</h1>
-</header>
-
 <div class="container">
 
-  <!-- 🔹 Escolher moeda -->
+  <h1>📊 Crypto Analyzer</h1>
+
+  <!-- MOEDAS -->
   <div class="card">
-  <h2><i class="fa-solid fa-coins"></i> Mercado</h2>
-
-  <div class="moedas">
- <button class="moeda active" data-moeda="bitcoin">BTC</button>
-<button class="moeda" data-moeda="ethereum">ETH</button>
-<button class="moeda" data-moeda="solana">SOL</button>
-<button class="moeda" data-moeda="ripple">XRP</button>
-<button class="moeda" data-moeda="cardano">ADA</button>
-<button class="moeda" data-moeda="dogecoin">DOGE</button>
-<button class="moeda" data-moeda="toncoin">TON</button>
-<button class="moeda" data-moeda="chainlink">LINK</button>
-  </div>
-</div>
-
-  <!-- 💰 Preço -->
-  <div class="card destaque">
-    <h2><i class="fa-solid fa-dollar-sign"></i> Preço</h2>
-    <p id="preco">Carregando...</p>
+    <div class="moedas">
+      <button class="moeda active" data-moeda="bitcoin">BTC</button>
+      <button class="moeda" data-moeda="ethereum">ETH</button>
+      <button class="moeda" data-moeda="solana">SOL</button>
+      <button class="moeda" data-moeda="ripple">XRP</button>
+      <button class="moeda" data-moeda="cardano">ADA</button>
+    </div>
   </div>
 
-  <!-- ⏱️ Timer -->
+  <!-- PREÇO -->
   <div class="card">
-    <h2><i class="fa-solid fa-clock"></i> Próxima vela</h2>
+    <h2 id="preco">Carregando...</h2>
+  </div>
+
+  <!-- TIMER -->
+  <div class="card">
     <p id="timer">00:00</p>
   </div>
 
-  <!-- 📊 Gráfico GRANDE -->
-  <div class="card grafico-full">
-    <h2><i class="fa-solid fa-chart-area"></i> Gráfico</h2>
+  <!-- GRÁFICO -->
+  <div class="card">
     <div id="chart"></div>
   </div>
 
-  <!-- 🧠 Análise -->
-  <div class="card sinal">
-    <h2><i class="fa-solid fa-brain"></i> Análise</h2>
+  <!-- ANALISE -->
+  <div class="card">
+    <div id="sinalBox" class="sinal-box">...</div>
 
-    <!-- Ação principal -->
-   <div class="card indicador-card">
-  <h2><i class="fa-solid fa-flask"></i> Indicadores</h2>
-
-  <label class="upload-area">
-    <input type="file" id="fileInput" accept=".js">
-    
-    <div class="upload-content">
-      <i class="fa-solid fa-upload"></i>
-      <p>Arraste ou clique para enviar seu indicador</p>
-      <span>.js apenas</span>
-    </div>
-  </label>
-
-  <button class="btn-indicador" onclick="carregarIndicador()">
-    Ativar Indicador
-  </button>
-
-  <p id="statusIndicador">Nenhum indicador carregado</p>
-</div>
-    <!-- Stats -->
     <div class="stats">
-
-      <div class="stat">
-        <span>Tendência</span>
-        <strong id="tendencia">-</strong>
-      </div>
-
-      <div class="stat">
-        <span>Força</span>
-        <strong id="forca">-</strong>
-      </div>
-
-      <div class="stat">
-        <span>Momentum</span>
-        <strong id="momentum">-</strong>
-      </div>
-
-      <div class="stat">
-        <span>Volatilidade</span>
-        <strong id="volatilidade">-</strong>
-      </div>
-
+      <div>Tendência: <span id="tendencia">-</span></div>
+      <div>Força: <span id="forca">-</span></div>
+      <div>Momentum: <span id="momentum">-</span></div>
+      <div>Volatilidade: <span id="volatilidade">-</span></div>
     </div>
   </div>
 
 </div>
 
-<!-- Scripts -->
-<script src="https://s3.tradingview.com/tv.js"></script>
 <script src="script.js"></script>
-
 </body>
+</html>
 </html>
