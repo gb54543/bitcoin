@@ -2,9 +2,14 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Crypto Analyzer Pro</title>
+  <title>Analyzer Pro</title>
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- TradingView -->
   <script src="https://s3.tradingview.com/tv.js"></script>
 </head>
 
@@ -12,10 +17,10 @@
 
 <div class="container">
 
-  <h1>📊 Crypto Analyzer Pro</h1>
+  <h1>Analyzer Pro</h1>
 
   <!-- MOEDAS -->
-  <div class="card moedas">
+  <div class="moedas">
     <button class="moeda active" data-moeda="bitcoin">BTC</button>
     <button class="moeda" data-moeda="ethereum">ETH</button>
     <button class="moeda" data-moeda="solana">SOL</button>
@@ -26,56 +31,39 @@
 
   <!-- INFO -->
   <div class="info">
-
-    <div class="card info-box">
-      <p>💰 Preço</p>
+    <div class="box">
+      <span>Preço</span>
       <strong id="preco">--</strong>
     </div>
 
-    <div class="card info-box">
-      <p>⏱ Tempo</p>
-      <strong id="timer">00:00</strong>
+    <div class="box">
+      <span>Tempo</span>
+      <strong id="timer">--</strong>
     </div>
 
-    <div class="card info-box">
-      <p>⚡ Atualização</p>
-      <strong id="status">OK</strong>
+    <div class="box">
+      <span>Status</span>
+      <strong id="status">--</strong>
     </div>
-
   </div>
 
   <!-- GRÁFICO -->
-  <div class="card grafico">
-    <div id="chart"></div>
-  </div>
+  <div id="chart"></div>
 
   <!-- ANALISE -->
-  <div class="card analise">
-    <div id="sinalBox" class="sinal">ANALISANDO...</div>
+  <div class="analise">
+
+    <div id="sinal">CARREGANDO...</div>
 
     <div class="grid">
-
-      <div>
-        <span>Tendência</span>
-        <strong id="tendencia">-</strong>
-      </div>
-
-      <div>
-        <span>Força</span>
-        <strong id="forca">-</strong>
-      </div>
-
-      <div>
-        <span>Momentum</span>
-        <strong id="momentum">-</strong>
-      </div>
-
-      <div>
-        <span>Volatilidade</span>
-        <strong id="volatilidade">-</strong>
-      </div>
-
+      <div><span>Tendência</span><strong id="tendencia">-</strong></div>
+      <div><span>Força</span><strong id="forca">-</strong></div>
+      <div><span>RSI</span><strong id="rsi">-</strong></div>
+      <div><span>Momentum</span><strong id="momentum">-</strong></div>
+      <div><span>Volatilidade</span><strong id="vol">-</strong></div>
+      <div><span>Score</span><strong id="score">-</strong></div>
     </div>
+
   </div>
 
 </div>
