@@ -1,4 +1,3 @@
-// 🔗 PARES
 const pares = {
   bitcoin: "BTCUSDT",
   ethereum: "ETHUSDT",
@@ -8,15 +7,35 @@ const pares = {
   dogecoin: "DOGEUSDT",
   toncoin: "TONUSDT",
   chainlink: "LINKUSDT"
-};;
+};
 
 let moedaAtual = "bitcoin";
 let historico = [];
+let indicadorPersonalizado = null;
 
-// 📊 GRÁFICO (seguro)
+/* 🔄 BOTÕES */
+function iniciarBotoes() {
+  document.querySelectorAll(".moeda").forEach(btn => {
+    btn.onclick = () => {
+
+      document.querySelectorAll(".moeda")
+        .forEach(b => b.classList.remove("active"));
+
+      btn.classList.add("active");
+
+      moedaAtual = btn.dataset.moeda;
+      historico = [];
+
+      criarGrafico();
+      pegarPreco();
+    };
+  });
+}
+
+/* 📊 GRÁFICO */
 function criarGrafico() {
   const el = document.getElementById("chart");
-  if (!el || typeof TradingView === "undefined") return;
+  if (!el) return;
 
   el.innerHTML = "";
 
@@ -31,151 +50,111 @@ function criarGrafico() {
   });
 }
 
-// 💰 PREÇO
+/* 💰 PREÇO */
 async function pegarPreco() {
   try {
-    const par = pares[moedaAtual];
-
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${par}`);
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pares[moedaAtual]}`);
     const data = await res.json();
 
     const preco = parseFloat(data.price);
 
-    const elPreco = document.getElementById("preco");
-    if (elPreco) {
-      elPreco.innerText = "$ " + preco.toLocaleString();
-    }
+    document.getElementById("preco").innerText =
+      "$ " + preco.toLocaleString();
 
     analisar(preco);
 
   } catch (e) {
-    console.log("Erro API:", e);
+    console.log(e);
   }
 }
 
-// 🧠 ANÁLISE BONITA
+/* 🧠 ANALISE */
 function analisar(preco) {
   historico.push(preco);
-  if (historico.length > 40) historico.shift();
+  if (historico.length > 50) historico.shift();
 
   let media = historico.reduce((a,b)=>a+b,0)/historico.length;
-
   let diff = ((preco - media)/media)*100;
-  let forca = Math.abs(diff);
 
   let tendencia = preco > media ? "Alta" : "Baixa";
+  let forca = Math.abs(diff);
 
-  let acao = "";
-  let classe = "";
-
-  if (preco > media) {
-    acao = forca > 0.3 ? "COMPRAR" : "COMPRA FRACA";
-    classe = "compra";
-  } else {
-    acao = forca > 0.3 ? "VENDER" : "VENDA FRACA";
-    classe = "venda";
-  }
-
-  let confianca =
-    forca > 0.5 ? "Alta"
-    : forca > 0.2 ? "Média"
-    : "Baixa";
+  let acao = preco > media ? "COMPRAR" : "VENDER";
+  let classe = preco > media ? "compra" : "venda";
 
   let ultimo = historico[historico.length - 2] || preco;
   let momentum = preco > ultimo ? "Subindo" : "Caindo";
 
   let max = Math.max(...historico);
   let min = Math.min(...historico);
-  let volatilidade = ((max - min)/min)*100;
+  let vol = ((max - min)/min)*100;
 
-  // 🎨 UI
-  const box = document.getElementById("sinalBox");
-  if (box) box.className = "sinal-box " + classe;
+  document.getElementById("sinalBox").className = "sinal-box " + classe;
+  document.getElementById("acao").innerText = acao;
+  document.getElementById("confianca").innerText =
+    forca > 0.5 ? "Alta" : forca > 0.2 ? "Média" : "Baixa";
 
-  const set = (id, value) => {
-    const el = document.getElementById(id);
-    if (el) el.innerText = value;
-  };
+  document.getElementById("tendencia").innerText = tendencia;
+  document.getElementById("forca").innerText = forca.toFixed(2) + "%";
+  document.getElementById("momentum").innerText = momentum;
+  document.getElementById("volatilidade").innerText = vol.toFixed(2) + "%";
 
-  set("acao", acao);
-  set("confianca", " • " + confianca);
-  set("tendencia", tendencia);
-  set("forca", forca.toFixed(2) + "%");
-  set("momentum", momentum);
-  set("volatilidade", volatilidade.toFixed(2) + "%");
+  // indicador personalizado
+  if (indicadorPersonalizado) {
+    try {
+      indicadorPersonalizado(preco, historico);
+    } catch {}
+  }
 }
 
-// ⏱️ TIMER
+/* ⏱️ TIMER */
 function iniciarTimer() {
   setInterval(() => {
-    const el = document.getElementById("timer");
-    if (!el) return;
-
-    const agora = new Date();
-    const restante = 60 - agora.getSeconds();
-
-    el.innerText = "00:" + String(restante).padStart(2, "0");
+    const s = new Date().getSeconds();
+    document.getElementById("timer").innerText =
+      "00:" + String(60 - s).padStart(2, "0");
   }, 1000);
 }
 
-// 🔄 TROCAR MOEDA
-function iniciarBotoesMoeda() {
-  const botoes = document.querySelectorAll(".moeda");
+/* 📂 INDICADOR */
+function carregarIndicador() {
+  const input = document.getElementById("fileInput");
+  const status = document.getElementById("statusIndicador");
 
-  botoes.forEach(btn => {
-    btn.onclick = () => {
+  if (!input.files.length) {
+    status.innerText = "Escolha um arquivo";
+    return;
+  }
 
-      // UI ativa
-      document.querySelectorAll(".moeda")
-        .forEach(b => b.classList.remove("active"));
+  const reader = new FileReader();
 
-      btn.classList.add("active");
+  reader.onload = e => {
+    try {
+      indicadorPersonalizado =
+        new Function("preco", "historico", e.target.result);
 
-      // troca moeda
-      moedaAtual = btn.dataset.moeda;
-      historico = [];
+      status.innerText = "Indicador ativo 🚀";
+    } catch {
+      status.innerText = "Erro no arquivo ❌";
+    }
+  };
 
-      // atualiza tudo
-      criarGrafico();
-
-      setTimeout(() => {
-        pegarPreco();
-      }, 300);
-    };
-  });
+  reader.readAsText(input.files[0]);
 }
 
-// 🚀 INICIAR TUDO
-window.addEventListener("load", () => {
-  iniciarSelect();
+/* 🚀 START */
+window.onload = () => {
+
+  iniciarBotoes();
   iniciarTimer();
 
-  // tenta criar gráfico até carregar
-  const intervaloGrafico = setInterval(() => {
-    if (typeof TradingView !== "undefined") {
+  const wait = setInterval(() => {
+    if (window.TradingView) {
       criarGrafico();
-      clearInterval(intervaloGrafico);
+      clearInterval(wait);
     }
   }, 500);
 
   pegarPreco();
   setInterval(pegarPreco, 2000);
-});
-function iniciarBotoesMoeda() {
-  const botoes = document.querySelectorAll(".moeda");
-
-  botoes.forEach(btn => {
-    btn.addEventListener("click", () => {
-
-      // remover ativo
-      botoes.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      moedaAtual = btn.dataset.moeda;
-      historico = [];
-
-      criarGrafico();
-      pegarPreco();
-    });
-  });
-}
+};
