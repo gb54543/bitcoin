@@ -1,0 +1,25 @@
+body {
+  font-family: Arial;
+  background: #0a0a14;
+  color: white;
+  text-align: center;
+}
+
+header {
+  background: linear-gradient(90deg, #6a00ff, #a100ff);
+  padding: 20px;
+}
+
+section {
+  margin: 25px;
+}
+
+#chart {
+  height: 400px;
+}
+
+.sinais {
+  background: #141428;
+  padding: 20px;
+  border-radius: 10px;
+}
