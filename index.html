@@ -2,40 +2,44 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Crypto Analyzer PRO+</title>
+  <title>Crypto Analyzer X</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header>
-    <h1>🚀 Crypto Analyzer PRO+</h1>
+    <h1>⚡ Crypto Analyzer X</h1>
   </header>
 
-  <section class="card">
-    <h2>💱 Escolha a moeda</h2>
-    <select id="moeda">
-      <option value="bitcoin">Bitcoin (BTC)</option>
-      <option value="ethereum">Ethereum (ETH)</option>
-      <option value="solana">Solana (SOL)</option>
-      <option value="ripple">XRP</option>
-      <option value="cardano">Cardano (ADA)</option>
-    </select>
-  </section>
+  <div class="container">
 
-  <section class="card">
-    <h2>💰 Preço Atual</h2>
-    <p id="preco">Carregando...</p>
-  </section>
+    <div class="card">
+      <h2>💱 Escolha a moeda</h2>
+      <select id="moeda">
+        <option value="bitcoin">Bitcoin (BTC)</option>
+        <option value="ethereum">Ethereum (ETH)</option>
+        <option value="solana">Solana (SOL)</option>
+        <option value="ripple">XRP</option>
+        <option value="cardano">Cardano (ADA)</option>
+      </select>
+    </div>
 
-  <section class="card">
-    <h2>📊 Gráfico</h2>
-    <div id="chart"></div>
-  </section>
+    <div class="card preco-box">
+      <h2>💰 Preço Atual</h2>
+      <p id="preco">...</p>
+    </div>
 
-  <section class="card sinal">
-    <h2>📈 Sinal Inteligente</h2>
-    <p id="sinal">Analisando...</p>
-  </section>
+    <div class="card">
+      <h2>📊 Gráfico</h2>
+      <div id="chart"></div>
+    </div>
+
+    <div class="card sinal-box">
+      <h2>📈 Sinal</h2>
+      <p id="sinal">Analisando...</p>
+    </div>
+
+  </div>
 
   <script src="https://s3.tradingview.com/tv.js"></script>
   <script src="script.js"></script>
