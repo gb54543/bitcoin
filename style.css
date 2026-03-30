@@ -1,107 +1,117 @@
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f0f1a;
-  color: white;
-}
+const pares = {
+  bitcoin: "BTCUSDT",
+  ethereum: "ETHUSDT",
+  solana: "SOLUSDT",
+  ripple: "XRPUSDT",
+  cardano: "ADAUSDT",
+  dogecoin: "DOGEUSDT"
+};
 
-.container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-/* CARDS */
-.card {
-  background: #151528;
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 15px;
-}
+let moedaAtual = "bitcoin";
+let historico = [];
 
 /* MOEDAS */
-.moedas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
+document.querySelectorAll(".moeda").forEach(btn => {
+  btn.onclick = () => {
 
-.moeda {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  background: #1f1f35;
-  color: white;
-  cursor: pointer;
-  font-size: 14px;
-}
+    document.querySelectorAll(".moeda").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
 
-.moeda.active {
-  background: #6c5cff;
-}
+    moedaAtual = btn.dataset.moeda;
+    historico = [];
 
-/* INFO */
-.info {
-  display: flex;
-  gap: 10px;
-}
-
-.info-box {
-  flex: 1;
-  text-align: center;
-}
-
-.info-box strong {
-  font-size: 18px;
-}
+    criarGrafico();
+  };
+});
 
 /* GRÁFICO */
-.grafico #chart {
-  height: 400px;
-  border-radius: 10px;
+function criarGrafico() {
+  if (!window.TradingView) return;
+
+  document.getElementById("chart").innerHTML = "";
+
+  new TradingView.widget({
+    symbol: "BINANCE:" + pares[moedaAtual],
+    width: "100%",
+    height: 400,
+    theme: "dark",
+    interval: "1",
+    container_id: "chart"
+  });
 }
 
-/* ANALISE */
-.sinal {
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 15px;
+/* ATUALIZAÇÃO */
+async function atualizar() {
+  try {
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pares[moedaAtual]}`);
+    const data = await res.json();
+
+    const preco = parseFloat(data.price);
+
+    document.getElementById("preco").innerText = "$ " + preco.toFixed(2);
+    document.getElementById("status").innerText = "Online";
+
+    analisar(preco);
+
+  } catch {
+    document.getElementById("status").innerText = "Erro";
+  }
 }
 
-.compra {
-  background: #003322;
-  color: #00ff88;
+/* ANALISE ESTÁVEL */
+function analisar(preco) {
+
+  historico.push(preco);
+  if (historico.length > 40) historico.shift();
+
+  if (historico.length < 15) return;
+
+  let curta = media(historico.slice(-7));
+  let longa = media(historico);
+
+  let tendencia = curta > longa ? "Alta" : "Baixa";
+  let forca = Math.abs((curta - longa) / longa) * 100;
+
+  let acao = tendencia === "Alta" ? "COMPRAR" : "VENDER";
+  let classe = tendencia === "Alta" ? "compra" : "venda";
+
+  let ultimo = historico[historico.length - 2];
+  let momentum = preco > ultimo ? "Subindo" : "Caindo";
+
+  let max = Math.max(...historico);
+  let min = Math.min(...historico);
+  let vol = ((max - min) / min) * 100;
+
+  document.getElementById("sinalBox").className = "sinal " + classe;
+  document.getElementById("sinalBox").innerText = acao;
+
+  document.getElementById("tendencia").innerText = tendencia;
+  document.getElementById("forca").innerText = forca.toFixed(2) + "%";
+  document.getElementById("momentum").innerText = momentum;
+  document.getElementById("volatilidade").innerText = vol.toFixed(2) + "%";
 }
 
-.venda {
-  background: #330011;
-  color: #ff4d6d;
+function media(arr) {
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
+/* TIMER */
+setInterval(() => {
+  let s = new Date().getSeconds();
+  document.getElementById("timer").innerText =
+    "00:" + String(60 - s).padStart(2, "0");
+}, 1000);
 
-.grid div {
-  background: #1f1f35;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-}
+/* START */
+window.onload = () => {
 
-.grid span {
-  font-size: 12px;
-  color: #aaa;
-}
+  let wait = setInterval(() => {
+    if (window.TradingView) {
+      criarGrafico();
+      clearInterval(wait);
+    }
+  }, 500);
+
+  atualizar();
+  setInterval(atualizar, 2000);
+};
