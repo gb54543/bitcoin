@@ -52,10 +52,40 @@ function analisar(preco) {
   let direcao = preco > media ? "alta" : "baixa";
 
   let diff = ((preco - media) / media) * 100;
-
   let forca = Math.abs(diff);
 
+  // 📊 Volatilidade
+  let max = Math.max(...historico);
+  let min = Math.min(...historico);
+  let volatilidade = ((max - min) / min) * 100;
+
+  // 🎯 Sinal
   let sinal = "";
+
+  if (direcao === "alta" && forca > 0.3) {
+    sinal = "🟢 Compra forte";
+  } else if (direcao === "alta") {
+    sinal = "🟢 Compra leve";
+  } else if (direcao === "baixa" && forca > 0.3) {
+    sinal = "🔴 Venda forte";
+  } else {
+    sinal = "🔴 Venda leve";
+  }
+
+  // 🧠 Confiança
+  let confianca = "";
+
+  if (forca > 0.5) confianca = "🔥 Alta";
+  else if (forca > 0.2) confianca = "⚖️ Média";
+  else confianca = "❄️ Baixa";
+
+  // 🖥️ Atualizar tela
+  document.getElementById("sinal").innerText = `Sinal: ${sinal}`;
+  document.getElementById("tendencia").innerText = `Tendência: ${direcao}`;
+  document.getElementById("forca").innerText = `Força: ${forca.toFixed(2)}%`;
+  document.getElementById("volatilidade").innerText =
+    `Volatilidade: ${volatilidade.toFixed(2)}% | Confiança: ${confianca}`;
+}
 
   // 🎯 Lógica mais refinada
   if (direcao === "alta" && forca > 0.3) {
@@ -95,3 +125,19 @@ document.getElementById("moeda").addEventListener("change", (e) => {
 criarGrafico(pares[moedaAtual]);
 pegarPreco();
 setInterval(pegarPreco, 3000);
+// ⏱️ Timer da vela (1 minuto)
+function iniciarTimer() {
+  setInterval(() => {
+    const agora = new Date();
+
+    const segundos = agora.getSeconds();
+    const restante = 60 - segundos;
+
+    const min = String(Math.floor(restante / 60)).padStart(2, "0");
+    const sec = String(restante % 60).padStart(2, "0");
+
+    document.getElementById("timer").innerText = `${min}:${sec}`;
+  }, 1000);
+}
+
+iniciarTimer();
