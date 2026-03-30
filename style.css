@@ -492,3 +492,13 @@ body {
   color: #cbd5e1;
   font-size: 14px;
 }
+.ia-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  background: #0f172a;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #1f2937;
+  font-size: 14px;
+}
