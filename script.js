@@ -31,7 +31,7 @@ function criarGrafico() {
 }
 
 // 💰 PREÇO
-async function pegarPreco() {
+async function pegarPreço() {
   try {
     const par = pares[moedaAtual];
 
