@@ -307,7 +307,7 @@ function analisarOperacaoInteligente() {
   } else if (direcao === "VENDA") {
     motivoFinal = "Operação vendedora validada por " + motivos.slice(0, 3).join(", ") + ".";
   } else {
-    motivoFinal = "Mercado sem alinhamento forte entre tendência, momentum e força. Melhor esperar.";
+    motivoFinal = "O mercado está sem alinhamento forte entre tendência, força e momentum. O mais seguro agora é não entrar.";
   }
 
   return {
