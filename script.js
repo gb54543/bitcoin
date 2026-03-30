@@ -9,7 +9,10 @@ const pares = {
 
 let moedaAtual = "bitcoin";
 let historico = [];
-
+let statsIA = {
+  acertos: 0,
+  erros: 0
+};
 // 📊 GRÁFICO (seguro)
 function criarGrafico() {
   const el = document.getElementById("chart");
