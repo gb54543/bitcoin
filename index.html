@@ -1,86 +1,182 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Analyzer Pro</title>
+  <title>AI Trader Pro</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f1117;
+      color: #fff;
+    }
 
-  <!-- TradingView -->
-  <script src="https://s3.tradingview.com/tv.js"></script>
+    header {
+      padding: 15px;
+      text-align: center;
+      background: #151823;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 15px;
+      padding: 15px;
+    }
+
+    .box {
+      background: #151823;
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 350px !important;
+    }
+
+    .moedas {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .moedas button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: #1f2333;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .moedas button:hover {
+      background: #2b3050;
+    }
+
+    .info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .info div {
+      background: #1f2333;
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .destaque {
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #1f2333;
+      border-radius: 8px;
+    }
+
+    .zonas {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .upload {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .upload label {
+      display: inline-block;
+      padding: 8px 15px;
+      background: #2b3050;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .leitura {
+      margin-top: 10px;
+      font-size: 13px;
+      background: #1f2333;
+      padding: 10px;
+      border-radius: 6px;
+    }
+  </style>
 </head>
 
 <body>
 
+<header>📊 AI Trader Pro</header>
+
 <div class="container">
 
-  <h1>Analyzer Pro</h1>
+  <!-- GRAFICO -->
+  <div class="box">
+    <div class="moedas">
+      <button onclick="trocarMoeda('BTC')">BTC</button>
+      <button onclick="trocarMoeda('ETH')">ETH</button>
+      <button onclick="trocarMoeda('SOL')">SOL</button>
+      <button onclick="trocarMoeda('BNB')">BNB</button>
+      <button onclick="trocarMoeda('XRP')">XRP</button>
+    </div>
 
-  <!-- MOEDAS -->
-  <div class="moedas">
-    <button class="moeda active" data-moeda="bitcoin">BTC</button>
-    <button class="moeda" data-moeda="ethereum">ETH</button>
-    <button class="moeda" data-moeda="solana">SOL</button>
-    <button class="moeda" data-moeda="ripple">XRP</button>
-    <button class="moeda" data-moeda="cardano">ADA</button>
-    <button class="moeda" data-moeda="dogecoin">DOGE</button>
+    <canvas id="grafico"></canvas>
   </div>
-
-  <!-- INFO -->
-  <div class="info">
-    <div class="box">
-      <span>Preço</span>
-      <strong id="preco">--</strong>
-    </div>
-
-    <div class="box">
-      <span>Tempo</span>
-      <strong id="timer">--</strong>
-    </div>
-
-    <div class="box">
-      <span>Status</span>
-      <strong id="status">--</strong>
-    </div>
-  </div>
-
-  <!-- GRÁFICO -->
-  <div id="chart"></div>
 
   <!-- ANALISE -->
- <div class="analise">
+  <div class="box">
 
-  <div id="sinal" class="big-sinal">ANALISANDO</div>
+    <div class="destaque" id="sinal">Carregando...</div>
 
-  <div class="probabilidades">
-    <div>Alta: <strong id="probAlta">0%</strong></div>
-    <div>Baixa: <strong id="probBaixa">0%</strong></div>
-  </div>
+    <div class="info">
+      <div>Tendência: <span id="tendencia"></span></div>
+      <div>Força: <span id="forca"></span></div>
+      <div>RSI: <span id="rsi"></span></div>
+      <div>Momentum: <span id="momentum"></span></div>
+      <div>Volatilidade: <span id="vol"></span></div>
+      <div>Score: <span id="score"></span></div>
+    </div>
 
-  <div class="grid">
+    <div class="zonas">
+      <div>Compra: <span id="buyZone"></span></div>
+      <div>Venda: <span id="sellZone"></span></div>
+    </div>
 
-    <div><span>Tendência</span><strong id="tendencia">-</strong></div>
-    <div><span>Força</span><strong id="forca">-</strong></div>
-    <div><span>RSI</span><strong id="rsi">-</strong></div>
-    <div><span>Momentum</span><strong id="momentum">-</strong></div>
-    <div><span>Volatilidade</span><strong id="vol">-</strong></div>
-    <div><span>Score IA</span><strong id="score">-</strong></div>
+    <div class="zonas">
+      <div>Alta: <span id="probAlta"></span></div>
+      <div>Queda: <span id="probBaixa"></span></div>
+    </div>
 
-  </div>
+    <div class="leitura" id="leitura">
+      Analisando mercado...
+    </div>
 
-  <div class="zona">
-    <div>Zona de Compra: <strong id="buyZone">-</strong></div>
-    <div>Zona de Venda: <strong id="sellZone">-</strong></div>
-  </div>
+    <!-- UPLOAD INDICADOR -->
+    <div class="upload">
+      <label for="uploadIndicador">+ Adicionar Indicador</label>
+      <input type="file" id="uploadIndicador">
+    </div>
 
-  <div class="leitura" id="leitura">
-    Carregando análise inteligente...
   </div>
 
 </div>
+
+<!-- JS -->
 <script src="script.js"></script>
+
 </body>
 </html>
