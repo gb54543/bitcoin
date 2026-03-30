@@ -118,3 +118,14 @@ h1 {
   color: #cbd5e1;
   line-height: 1.4;
 }
+.btn-ai {
+  width: 100%;
+  padding: 10px;
+  background: #6c5cff;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
