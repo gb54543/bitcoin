@@ -1,56 +1,97 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Trader AI Pro</title>
+  <meta charset="UTF-8">
+  <title>Crypto Analyzer X</title>
 
-<link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
 
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+  <!-- Ícones -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="container">
-
 <header>
-<h1>Trader AI Pro</h1>
-
-<select id="moeda">
-<option value="BTCUSDT">BTC</option>
-<option value="ETHUSDT">ETH</option>
-<option value="SOLUSDT">SOL</option>
-<option value="BNBUSDT">BNB</option>
-<option value="XRPUSDT">XRP</option>
-</select>
+  <h1><i class="fa-solid fa-chart-line"></i> Crypto Analyzer X</h1>
 </header>
 
-<div id="grafico"></div>
+<div class="container">
 
-<div class="painel">
+  <!-- 🔹 Escolher moeda -->
+  <div class="card">
+    <h2><i class="fa-solid fa-coins"></i> Moeda</h2>
 
-<button id="btnAI">Análise Inteligente</button>
+    <div class="select-box">
+      <select id="moeda">
+        <option value="bitcoin">Bitcoin (BTC)</option>
+        <option value="ethereum">Ethereum (ETH)</option>
+        <option value="solana">Solana (SOL)</option>
+        <option value="ripple">XRP</option>
+        <option value="cardano">Cardano (ADA)</option>
+      </select>
+    </div>
+  </div>
 
-<div class="grid">
-<div><b>Tendência</b><span id="tendencia">-</span></div>
-<div><b>Força</b><span id="forca">-</span></div>
-<div><b>Momentum</b><span id="momentum">-</span></div>
-<div><b>Volatilidade</b><span id="vol">-</span></div>
-<div><b>Prob Alta</b><span id="probAlta">-</span></div>
-<div><b>Prob Baixa</b><span id="probBaixa">-</span></div>
-<div><b>Compra</b><span id="buyZone">-</span></div>
-<div><b>Venda</b><span id="sellZone">-</span></div>
-<div><b>Sinal</b><span id="sinal">-</span></div>
+  <!-- 💰 Preço -->
+  <div class="card destaque">
+    <h2><i class="fa-solid fa-dollar-sign"></i> Preço</h2>
+    <p id="preco">Carregando...</p>
+  </div>
+
+  <!-- ⏱️ Timer -->
+  <div class="card">
+    <h2><i class="fa-solid fa-clock"></i> Próxima vela</h2>
+    <p id="timer">00:00</p>
+  </div>
+
+  <!-- 📊 Gráfico GRANDE -->
+  <div class="card grafico-full">
+    <h2><i class="fa-solid fa-chart-area"></i> Gráfico</h2>
+    <div id="chart"></div>
+  </div>
+
+  <!-- 🧠 Análise -->
+  <div class="card sinal">
+    <h2><i class="fa-solid fa-brain"></i> Análise</h2>
+
+    <!-- Ação principal -->
+    <div class="sinal-box" id="sinalBox">
+      <span id="acao">Carregando...</span>
+      <span id="confianca"></span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+
+      <div class="stat">
+        <span>Tendência</span>
+        <strong id="tendencia">-</strong>
+      </div>
+
+      <div class="stat">
+        <span>Força</span>
+        <strong id="forca">-</strong>
+      </div>
+
+      <div class="stat">
+        <span>Momentum</span>
+        <strong id="momentum">-</strong>
+      </div>
+
+      <div class="stat">
+        <span>Volatilidade</span>
+        <strong id="volatilidade">-</strong>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
-<div class="leitura" id="leitura">
-Clique em análise inteligente
-</div>
+<!-- Scripts -->
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script src="script.js"></script>
 
-</div>
-
-</div>
-
-<script src="script.js" defer></script>
 </body>
 </html>
