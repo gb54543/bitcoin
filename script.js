@@ -165,125 +165,223 @@ window.addEventListener("load", () => {
   pegarPreco();
   setInterval(pegarPreco, 2000);
 });
-function gerarOperacoes() {
-  const container = document.getElementById("operacoes");
-  if (!container || historico.length < 5) return;
+let ultimaOperacaoIA = null;
+let ultimaAssinaturaMercado = "";
 
-  container.innerHTML = "";
+function calcularRSISimples(dados, periodo = 14) {
+  if (dados.length < periodo + 1) return null;
 
-  const precoAtual = historico[historico.length - 1];
+  let ganhos = 0;
+  let perdas = 0;
 
-  for (let i = 0; i < 3; i++) {
-    let direcao = Math.random() > 0.5 ? "COMPRA" : "VENDA";
-
-    let variacao = (Math.random() * 0.5).toFixed(2);
-    let tempo = [1, 3, 5][Math.floor(Math.random() * 3)];
-
-    let entrada = direcao === "COMPRA"
-      ? precoAtual * (1 - variacao / 100)
-      : precoAtual * (1 + variacao / 100);
-
-    let div = document.createElement("div");
-    div.className = "op " + (direcao === "COMPRA" ? "compra" : "venda");
-
-    div.innerHTML = `
-      <strong>${direcao}</strong><br>
-      Entrada: $ ${entrada.toFixed(2)}<br>
-      Tempo: ${tempo} min
-    `;
-
-    container.appendChild(div);
+  for (let i = dados.length - periodo; i < dados.length; i++) {
+    const diff = dados[i] - dados[i - 1];
+    if (diff >= 0) ganhos += diff;
+    else perdas += Math.abs(diff);
   }
+
+  if (perdas === 0) return 100;
+  const rs = ganhos / perdas;
+  return 100 - (100 / (1 + rs));
 }
-document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("btnOp");
 
-  if (btn) {
-    btn.addEventListener("click", gerarOperacoes);
+function analisarOperacaoInteligente() {
+  if (historico.length < 25) {
+    return {
+      direcao: "AGUARDAR",
+      classe: "neutra",
+      confianca: 0,
+      prazo: "--",
+      forca: "--",
+      tendencia: "Indefinida",
+      rsi: "--",
+      motivo: "Ainda não há dados suficientes para validar uma operação com consistência."
+    };
   }
-});
-// 🔥 ESPERA CARREGAR TUDO
-window.addEventListener("load", () => {
-
-  const btn = document.getElementById("btnOp");
-
-  if (!btn) {
-    console.log("BOTÃO NÃO ENCONTRADO");
-    return;
-  }
-
-  btn.onclick = () => {
-    console.log("clicou 🔥");
-    gerarOperacoes();
-  };
-
-});
-function gerarOperacoes() {
-  const container = document.getElementById("operacoes");
-
-  if (!container) return;
-
-  if (historico.length < 20) {
-    container.innerHTML = "<p>Coletando dados do mercado...</p>";
-    return;
-  }
-
-  container.innerHTML = "";
 
   const atual = historico[historico.length - 1];
+  const media5 = historico.slice(-5).reduce((a, b) => a + b, 0) / 5;
+  const media10 = historico.slice(-10).reduce((a, b) => a + b, 0) / 10;
+  const media20 = historico.slice(-20).reduce((a, b) => a + b, 0) / 20;
 
-  // 📊 médias (base real)
-  const curta = historico.slice(-5).reduce((a,b)=>a+b,0) / 5;
-  const media = historico.slice(-10).reduce((a,b)=>a+b,0) / 10;
-  const longa = historico.reduce((a,b)=>a+b,0) / historico.length;
+  const variacaoCurta = ((media5 - media10) / media10) * 100;
+  const variacaoLonga = ((media10 - media20) / media20) * 100;
+  const forca = Math.abs(((media5 - media20) / media20) * 100);
 
-  // 📈 tendência
-  let tendencia = "NEUTRO";
-  if (curta > media && media > longa) tendencia = "ALTA";
-  if (curta < media && media < longa) tendencia = "BAIXA";
+  const rsi = calcularRSISimples(historico);
+  const ultimo = historico[historico.length - 2];
+  const momentumAlta = atual > ultimo;
 
-  // ⚡ força
-  let forca = Math.abs(((curta - longa) / longa) * 100);
+  let pontosCompra = 0;
+  let pontosVenda = 0;
+  let motivos = [];
 
-  // 🎯 confiança (simulada mas coerente)
-  let confianca =
-    forca > 0.5 ? 80 + Math.random()*10 :
-    forca > 0.2 ? 60 + Math.random()*10 :
-    50 + Math.random()*10;
-
-  confianca = Math.floor(confianca);
-
-  // 🔁 gerar 2 operações coerentes
-  for (let i = 0; i < 2; i++) {
-
-    let direcao;
-
-    if (tendencia === "ALTA") direcao = "COMPRA";
-    else if (tendencia === "BAIXA") direcao = "VENDA";
-    else direcao = Math.random() > 0.5 ? "COMPRA" : "VENDA";
-
-    let tempo =
-      forca > 0.5 ? 5 :
-      forca > 0.2 ? 3 :
-      1;
-
-    let op = document.createElement("div");
-
-    op.style.background = "#0f172a";
-    op.style.padding = "14px";
-    op.style.borderRadius = "10px";
-    op.style.marginTop = "10px";
-    op.style.borderLeft = direcao === "COMPRA"
-      ? "4px solid #22c55e"
-      : "4px solid #ef4444";
-
-    op.innerHTML = `
-      <strong>${direcao}</strong><br>
-      Tendência: ${tendencia}<br>
-      Confiança: ${confianca}%<br>
-      Tempo sugerido: ${tempo} min
-    `;
-
-    container.appendChild(op);
+  if (media5 > media10 && media10 > media20) {
+    pontosCompra += 3;
+    motivos.push("médias curtas acima das longas");
   }
+
+  if (media5 < media10 && media10 < media20) {
+    pontosVenda += 3;
+    motivos.push("médias curtas abaixo das longas");
+  }
+
+  if (variacaoCurta > 0.08) {
+    pontosCompra += 2;
+    motivos.push("aceleração de curto prazo positiva");
+  }
+
+  if (variacaoCurta < -0.08) {
+    pontosVenda += 2;
+    motivos.push("aceleração de curto prazo negativa");
+  }
+
+  if (variacaoLonga > 0.08) {
+    pontosCompra += 1;
+  }
+
+  if (variacaoLonga < -0.08) {
+    pontosVenda += 1;
+  }
+
+  if (rsi !== null) {
+    if (rsi >= 52 && rsi <= 68) {
+      pontosCompra += 2;
+      motivos.push("RSI em faixa favorável de continuação");
+    }
+
+    if (rsi <= 48 && rsi >= 32) {
+      pontosVenda += 2;
+      motivos.push("RSI em faixa favorável de continuação de queda");
+    }
+
+    if (rsi > 75) {
+      pontosCompra -= 1;
+      motivos.push("mercado esticado para cima");
+    }
+
+    if (rsi < 25) {
+      pontosVenda -= 1;
+      motivos.push("mercado esticado para baixo");
+    }
+  }
+
+  if (momentumAlta) {
+    pontosCompra += 1;
+  } else {
+    pontosVenda += 1;
+  }
+
+  const diferenca = Math.abs(pontosCompra - pontosVenda);
+
+  let direcao = "AGUARDAR";
+  let classe = "neutra";
+  let confianca = 50;
+  let prazo = "Curto";
+  let tendencia = "Lateral";
+
+  if (media5 > media20) tendencia = "Alta";
+  if (media5 < media20) tendencia = "Baixa";
+
+  if (pontosCompra >= pontosVenda + 2) {
+    direcao = "COMPRA";
+    classe = "compra";
+    confianca = Math.min(92, 58 + diferenca * 8 + Math.min(forca * 10, 12));
+  } else if (pontosVenda >= pontosCompra + 2) {
+    direcao = "VENDA";
+    classe = "venda";
+    confianca = Math.min(92, 58 + diferenca * 8 + Math.min(forca * 10, 12));
+  } else {
+    direcao = "AGUARDAR";
+    classe = "neutra";
+    confianca = Math.max(45, 55 - diferenca * 4);
+  }
+
+  if (forca > 0.45) prazo = "5 min";
+  else if (forca > 0.20) prazo = "3 min";
+  else prazo = "1 min";
+
+  let motivoFinal = "Sem validação suficiente.";
+  if (direcao === "COMPRA") {
+    motivoFinal = "Operação compradora validada por " + motivos.slice(0, 3).join(", ") + ".";
+  } else if (direcao === "VENDA") {
+    motivoFinal = "Operação vendedora validada por " + motivos.slice(0, 3).join(", ") + ".";
+  } else {
+    motivoFinal = "Mercado sem alinhamento forte entre tendência, momentum e força. Melhor esperar.";
+  }
+
+  return {
+    direcao,
+    classe,
+    confianca: Math.round(confianca),
+    prazo,
+    forca: forca.toFixed(2) + "%",
+    tendencia,
+    rsi: rsi === null ? "--" : rsi.toFixed(0),
+    motivo: motivoFinal
+  };
+}
+
+function renderOperacaoIA(resultado) {
+  const box = document.getElementById("operacaoIA");
+  if (!box) return;
+
+  box.innerHTML = `
+    <div class="ia-card-top">
+      <div class="ia-direcao ${resultado.classe}">${resultado.direcao}</div>
+      <div class="ia-badge">Confiança ${resultado.confianca}%</div>
+    </div>
+
+    <div class="ia-grid">
+      <div class="ia-item">
+        <span>Tendência</span>
+        <strong>${resultado.tendencia}</strong>
+      </div>
+      <div class="ia-item">
+        <span>Prazo sugerido</span>
+        <strong>${resultado.prazo}</strong>
+      </div>
+      <div class="ia-item">
+        <span>Força do mercado</span>
+        <strong>${resultado.forca}</strong>
+      </div>
+      <div class="ia-item">
+        <span>RSI</span>
+        <strong>${resultado.rsi}</strong>
+      </div>
+    </div>
+
+    <div class="ia-reason">${resultado.motivo}</div>
+  `;
+}
+
+function assinaturaMercadoAtual() {
+  if (historico.length < 20) return "sem-dados";
+
+  const atual = historico[historico.length - 1];
+  const media5 = historico.slice(-5).reduce((a, b) => a + b, 0) / 5;
+  const media20 = historico.slice(-20).reduce((a, b) => a + b, 0) / 20;
+  const rsi = calcularRSISimples(historico);
+
+  return [
+    atual.toFixed(2),
+    media5.toFixed(2),
+    media20.toFixed(2),
+    rsi ? rsi.toFixed(0) : "na"
+  ].join("|");
+}
+
+function operacaoInteligente() {
+  const assinatura = assinaturaMercadoAtual();
+
+  if (ultimaOperacaoIA && assinatura === ultimaAssinaturaMercado) {
+    renderOperacaoIA(ultimaOperacaoIA);
+    return;
+  }
+
+  const resultado = analisarOperacaoInteligente();
+  ultimaOperacaoIA = resultado;
+  ultimaAssinaturaMercado = assinatura;
+
+  renderOperacaoIA(resultado);
 }
