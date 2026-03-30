@@ -202,3 +202,63 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", gerarOperacoes);
   }
 });
+// 🔥 ESPERA CARREGAR TUDO
+window.addEventListener("load", () => {
+
+  const btn = document.getElementById("btnOp");
+
+  if (!btn) {
+    console.log("BOTÃO NÃO ENCONTRADO");
+    return;
+  }
+
+  btn.onclick = () => {
+    console.log("clicou 🔥");
+    gerarOperacoes();
+  };
+
+});
+
+function gerarOperacoes() {
+  const container = document.getElementById("operacoes");
+
+  if (!container) return;
+
+  if (historico.length < 3) {
+    container.innerHTML = "<p>Carregando dados...</p>";
+    return;
+  }
+
+  container.innerHTML = "";
+
+  const preco = historico[historico.length - 1];
+
+  for (let i = 0; i < 3; i++) {
+
+    let direcao = preco > historico[0] ? "COMPRA" : "VENDA";
+
+    let tempo = [1, 3, 5][Math.floor(Math.random() * 3)];
+
+    let entrada = direcao === "COMPRA"
+      ? preco * (1 - Math.random() * 0.002)
+      : preco * (1 + Math.random() * 0.002);
+
+    let op = document.createElement("div");
+
+    op.style.background = "#0f172a";
+    op.style.padding = "12px";
+    op.style.borderRadius = "10px";
+    op.style.marginTop = "10px";
+    op.style.borderLeft = direcao === "COMPRA"
+      ? "4px solid #22c55e"
+      : "4px solid #ef4444";
+
+    op.innerHTML = `
+      <strong>${direcao}</strong><br>
+      Entrada: $ ${entrada.toFixed(2)}<br>
+      Tempo: ${tempo} min
+    `;
+
+    container.appendChild(op);
+  }
+}
