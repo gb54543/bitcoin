@@ -165,3 +165,40 @@ window.addEventListener("load", () => {
   pegarPreco();
   setInterval(pegarPreco, 2000);
 });
+function gerarOperacoes() {
+  const container = document.getElementById("operacoes");
+  if (!container || historico.length < 5) return;
+
+  container.innerHTML = "";
+
+  const precoAtual = historico[historico.length - 1];
+
+  for (let i = 0; i < 3; i++) {
+    let direcao = Math.random() > 0.5 ? "COMPRA" : "VENDA";
+
+    let variacao = (Math.random() * 0.5).toFixed(2);
+    let tempo = [1, 3, 5][Math.floor(Math.random() * 3)];
+
+    let entrada = direcao === "COMPRA"
+      ? precoAtual * (1 - variacao / 100)
+      : precoAtual * (1 + variacao / 100);
+
+    let div = document.createElement("div");
+    div.className = "op " + (direcao === "COMPRA" ? "compra" : "venda");
+
+    div.innerHTML = `
+      <strong>${direcao}</strong><br>
+      Entrada: $ ${entrada.toFixed(2)}<br>
+      Tempo: ${tempo} min
+    `;
+
+    container.appendChild(div);
+  }
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnOp");
+
+  if (btn) {
+    btn.addEventListener("click", gerarOperacoes);
+  }
+});
