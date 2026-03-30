@@ -10,13 +10,15 @@ const pares = {
 let moedaAtual = "bitcoin";
 let historico = [];
 
-};
-// 📊 GRÁFICO (seguro)
+let ultimaOperacaoIA = null;
+let ultimaAssinaturaMercado = "";
+
+// 📊 GRÁFICO
 function criarGrafico() {
   const el = document.getElementById("chart");
   if (!el || typeof TradingView === "undefined") return;
 
-  el.innerHTML = ""; // LIMPA TUDO
+  el.innerHTML = "";
 
   new TradingView.widget({
     width: "100%",
@@ -31,52 +33,50 @@ function criarGrafico() {
 }
 
 // 💰 PREÇO
-async function pegarPreço() {
+async function pegarPreco() {
   try {
     const par = pares[moedaAtual];
-
     const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${par}`);
     const data = await res.json();
-
     const preco = parseFloat(data.price);
 
     const elPreco = document.getElementById("preco");
     if (elPreco) {
-elPreco.innerText = "$ " + preco.toLocaleString();
+      elPreco.innerText = "$ " + preco.toLocaleString();
 
-elPreco.style.transform = "scale(1.1)";
-setTimeout(() => {
-  elPreco.style.transform = "scale(1)";
-}, 150);
-      if (!window.precoAnterior) window.precoAnterior = preco;
+      elPreco.style.transform = "scale(1.1)";
+      setTimeout(() => {
+        elPreco.style.transform = "scale(1)";
+      }, 150);
 
-if (preco > window.precoAnterior) {
-  elPreco.style.color = "#22c55e"; // verde
-} else if (preco < window.precoAnterior) {
-  elPreco.style.color = "#ef4444"; // vermelho
-}
+      if (typeof window.precoAnterior !== "number") {
+        window.precoAnterior = preco;
+      }
 
-window.precoAnterior = preco;
+      if (preco > window.precoAnterior) {
+        elPreco.style.color = "#22c55e";
+      } else if (preco < window.precoAnterior) {
+        elPreco.style.color = "#ef4444";
+      }
+
+      window.precoAnterior = preco;
     }
 
     analisar(preco);
-
   } catch (e) {
     console.log("Erro API:", e);
   }
 }
 
-// 🧠 ANÁLISE BONITA
+// 🧠 ANÁLISE
 function analisar(preco) {
   historico.push(preco);
   if (historico.length > 40) historico.shift();
 
-  let media = historico.reduce((a,b)=>a+b,0)/historico.length;
-
-  let diff = ((preco - media)/media)*100;
-  let forca = Math.abs(diff);
-
-  let tendencia = preco > media ? "Alta" : "Baixa";
+  const media = historico.reduce((a, b) => a + b, 0) / historico.length;
+  const diff = ((preco - media) / media) * 100;
+  const forca = Math.abs(diff);
+  const tendencia = preco > media ? "Alta" : "Baixa";
 
   let acao = "";
   let classe = "";
@@ -89,19 +89,18 @@ function analisar(preco) {
     classe = "venda";
   }
 
-  let confianca =
-    forca > 0.5 ? "Alta"
-    : forca > 0.2 ? "Média"
-    : "Baixa";
+  const confianca =
+    forca > 0.5 ? "Alta" :
+    forca > 0.2 ? "Média" :
+    "Baixa";
 
-  let ultimo = historico[historico.length - 2] || preco;
-  let momentum = preco > ultimo ? "Subindo" : "Caindo";
+  const ultimo = historico[historico.length - 2] || preco;
+  const momentum = preco > ultimo ? "Subindo" : "Caindo";
 
-  let max = Math.max(...historico);
-  let min = Math.min(...historico);
-  let volatilidade = ((max - min)/min)*100;
+  const max = Math.max(...historico);
+  const min = Math.min(...historico);
+  const volatilidade = ((max - min) / min) * 100;
 
-  // 🎨 UI
   const box = document.getElementById("sinalBox");
   if (box) box.className = "sinal-box " + classe;
 
@@ -132,43 +131,22 @@ function iniciarTimer() {
 }
 
 // 🔄 TROCAR MOEDA
-  function iniciarSelect() {
+function iniciarSelect() {
   const select = document.getElementById("moeda");
-
   if (!select) return;
 
   select.addEventListener("change", (e) => {
     moedaAtual = e.target.value;
     historico = [];
-
-    console.log("Moeda:", moedaAtual);
+    ultimaOperacaoIA = null;
+    ultimaAssinaturaMercado = "";
 
     criarGrafico();
     pegarPreco();
   });
 }
-// 🚀 INICIAR TUDO
-window.addEventListener("load", () => {
-  iniciarSelect();
-  iniciarTimer();
 
-  // esperar TradingView carregar
-  function esperarGrafico() {
-    if (typeof TradingView !== "undefined") {
-      criarGrafico();
-    } else {
-      setTimeout(esperarGrafico, 500);
-    }
-  }
-
-  esperarGrafico();
-
-  pegarPreco();
-  setInterval(pegarPreco, 2000);
-});
-let ultimaOperacaoIA = null;
-let ultimaAssinaturaMercado = "";
-
+// ===== OPERAÇÃO INTELIGENTE =====
 function calcularRSISimples(dados, periodo = 14) {
   if (dados.length < periodo + 1) return null;
 
@@ -186,10 +164,26 @@ function calcularRSISimples(dados, periodo = 14) {
   return 100 - (100 / (1 + rs));
 }
 
+function assinaturaMercadoAtual() {
+  if (historico.length < 20) return "sem-dados";
+
+  const atual = historico[historico.length - 1];
+  const media5 = historico.slice(-5).reduce((a, b) => a + b, 0) / 5;
+  const media20 = historico.slice(-20).reduce((a, b) => a + b, 0) / 20;
+  const rsi = calcularRSISimples(historico);
+
+  return [
+    atual.toFixed(2),
+    media5.toFixed(2),
+    media20.toFixed(2),
+    rsi ? rsi.toFixed(0) : "na"
+  ].join("|");
+}
+
 function analisarOperacaoInteligente() {
   if (historico.length < 25) {
     return {
-      direcao: "AGUARDAR",
+      direcao: "SEM ENTRADA",
       classe: "neutra",
       confianca: 0,
       prazo: "--",
@@ -207,7 +201,7 @@ function analisarOperacaoInteligente() {
 
   const variacaoCurta = ((media5 - media10) / media10) * 100;
   const variacaoLonga = ((media10 - media20) / media20) * 100;
-  const forca = Math.abs(((media5 - media20) / media20) * 100);
+  const forcaNum = Math.abs(((media5 - media20) / media20) * 100);
 
   const rsi = calcularRSISimples(historico);
   const ultimo = historico[historico.length - 2];
@@ -237,45 +231,30 @@ function analisarOperacaoInteligente() {
     motivos.push("aceleração de curto prazo negativa");
   }
 
-  if (variacaoLonga > 0.08) {
-    pontosCompra += 1;
-  }
-
-  if (variacaoLonga < -0.08) {
-    pontosVenda += 1;
-  }
+  if (variacaoLonga > 0.08) pontosCompra += 1;
+  if (variacaoLonga < -0.08) pontosVenda += 1;
 
   if (rsi !== null) {
     if (rsi >= 52 && rsi <= 68) {
       pontosCompra += 2;
-      motivos.push("RSI em faixa favorável de continuação");
+      motivos.push("RSI em faixa favorável");
     }
 
     if (rsi <= 48 && rsi >= 32) {
       pontosVenda += 2;
-      motivos.push("RSI em faixa favorável de continuação de queda");
+      motivos.push("RSI em faixa de pressão vendedora");
     }
 
-    if (rsi > 75) {
-      pontosCompra -= 1;
-      motivos.push("mercado esticado para cima");
-    }
-
-    if (rsi < 25) {
-      pontosVenda -= 1;
-      motivos.push("mercado esticado para baixo");
-    }
+    if (rsi > 75) pontosCompra -= 1;
+    if (rsi < 25) pontosVenda -= 1;
   }
 
-  if (momentumAlta) {
-    pontosCompra += 1;
-  } else {
-    pontosVenda += 1;
-  }
+  if (momentumAlta) pontosCompra += 1;
+  else pontosVenda += 1;
 
   const diferenca = Math.abs(pontosCompra - pontosVenda);
 
-  let direcao = "AGUARDAR";
+  let direcao = "SEM ENTRADA";
   let classe = "neutra";
   let confianca = 50;
   let prazo = "Curto";
@@ -287,19 +266,19 @@ function analisarOperacaoInteligente() {
   if (pontosCompra >= pontosVenda + 2) {
     direcao = "COMPRA";
     classe = "compra";
-    confianca = Math.min(92, 58 + diferenca * 8 + Math.min(forca * 10, 12));
+    confianca = Math.min(92, 58 + diferenca * 8 + Math.min(forcaNum * 10, 12));
   } else if (pontosVenda >= pontosCompra + 2) {
     direcao = "VENDA";
     classe = "venda";
-    confianca = Math.min(92, 58 + diferenca * 8 + Math.min(forca * 10, 12));
+    confianca = Math.min(92, 58 + diferenca * 8 + Math.min(forcaNum * 10, 12));
   } else {
-    direcao = "AGUARDAR";
+    direcao = "SEM ENTRADA";
     classe = "neutra";
     confianca = Math.max(45, 55 - diferenca * 4);
   }
 
-  if (forca > 0.45) prazo = "5 min";
-  else if (forca > 0.20) prazo = "3 min";
+  if (forcaNum > 0.45) prazo = "5 min";
+  else if (forcaNum > 0.20) prazo = "3 min";
   else prazo = "1 min";
 
   let motivoFinal = "Sem validação suficiente.";
@@ -316,7 +295,7 @@ function analisarOperacaoInteligente() {
     classe,
     confianca: Math.round(confianca),
     prazo,
-    forca: forca.toFixed(2) + "%",
+    forca: forcaNum.toFixed(2) + "%",
     tendencia,
     rsi: rsi === null ? "--" : rsi.toFixed(0),
     motivo: motivoFinal
@@ -356,24 +335,9 @@ function renderOperacaoIA(resultado) {
   `;
 }
 
-function assinaturaMercadoAtual() {
-  if (historico.length < 20) return "sem-dados";
-
-  const atual = historico[historico.length - 1];
-  const media5 = historico.slice(-5).reduce((a, b) => a + b, 0) / 5;
-  const media20 = historico.slice(-20).reduce((a, b) => a + b, 0) / 20;
-  const rsi = calcularRSISimples(historico);
-
-  return [
-    atual.toFixed(2),
-    media5.toFixed(2),
-    media20.toFixed(2),
-    rsi ? rsi.toFixed(0) : "na"
-  ].join("|");
-}
-
 function operacaoInteligente() {
   const assinatura = assinaturaMercadoAtual();
+
   if (ultimaOperacaoIA && assinatura === ultimaAssinaturaMercado) {
     renderOperacaoIA(ultimaOperacaoIA);
     return;
@@ -385,7 +349,25 @@ function operacaoInteligente() {
 
   renderOperacaoIA(resultado);
 }
+
+// 🚀 INICIAR TUDO
 window.addEventListener("load", () => {
+  iniciarSelect();
+  iniciarTimer();
+
+  function esperarGrafico() {
+    if (typeof TradingView !== "undefined") {
+      criarGrafico();
+    } else {
+      setTimeout(esperarGrafico, 500);
+    }
+  }
+
+  esperarGrafico();
+
+  pegarPreco();
+  setInterval(pegarPreco, 2000);
+
   const btnOp = document.getElementById("btnOp");
   if (btnOp) {
     btnOp.onclick = operacaoInteligente;
