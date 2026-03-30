@@ -57,17 +57,22 @@
     <h2><i class="fa-solid fa-brain"></i> Análise</h2>
 
     <!-- Ação principal -->
-    <div class="sinal-box" id="sinalBox">
-      <span id="acao">Carregando...</span>
-      <span id="confianca"></span>
-    </div>
-<div class="card">
-  <h2><i class="fa-solid fa-flask"></i> Indicadores Personalizados</h2>
+   <div class="card indicador-card">
+  <h2><i class="fa-solid fa-flask"></i> Indicadores</h2>
 
-  <div class="upload-box">
+  <label class="upload-area">
     <input type="file" id="fileInput" accept=".js">
-    <button onclick="carregarIndicador()">Carregar Indicador</button>
-  </div>
+    
+    <div class="upload-content">
+      <i class="fa-solid fa-upload"></i>
+      <p>Arraste ou clique para enviar seu indicador</p>
+      <span>.js apenas</span>
+    </div>
+  </label>
+
+  <button class="btn-indicador" onclick="carregarIndicador()">
+    Ativar Indicador
+  </button>
 
   <p id="statusIndicador">Nenhum indicador carregado</p>
 </div>
