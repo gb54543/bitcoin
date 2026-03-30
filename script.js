@@ -4,8 +4,11 @@ const pares = {
   ethereum: "ETHUSDT",
   solana: "SOLUSDT",
   ripple: "XRPUSDT",
-  cardano: "ADAUSDT"
-};
+  cardano: "ADAUSDT",
+  dogecoin: "DOGEUSDT",
+  toncoin: "TONUSDT",
+  chainlink: "LINKUSDT"
+};;
 
 let moedaAtual = "bitcoin";
 let historico = [];
