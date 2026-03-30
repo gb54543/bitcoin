@@ -218,35 +218,59 @@ window.addEventListener("load", () => {
   };
 
 });
-
 function gerarOperacoes() {
   const container = document.getElementById("operacoes");
 
   if (!container) return;
 
-  if (historico.length < 3) {
-    container.innerHTML = "<p>Carregando dados...</p>";
+  if (historico.length < 20) {
+    container.innerHTML = "<p>Coletando dados do mercado...</p>";
     return;
   }
 
   container.innerHTML = "";
 
-  const preco = historico[historico.length - 1];
+  const atual = historico[historico.length - 1];
 
-  for (let i = 0; i < 3; i++) {
+  // 📊 médias (base real)
+  const curta = historico.slice(-5).reduce((a,b)=>a+b,0) / 5;
+  const media = historico.slice(-10).reduce((a,b)=>a+b,0) / 10;
+  const longa = historico.reduce((a,b)=>a+b,0) / historico.length;
 
-    let direcao = preco > historico[0] ? "COMPRA" : "VENDA";
+  // 📈 tendência
+  let tendencia = "NEUTRO";
+  if (curta > media && media > longa) tendencia = "ALTA";
+  if (curta < media && media < longa) tendencia = "BAIXA";
 
-    let tempo = [1, 3, 5][Math.floor(Math.random() * 3)];
+  // ⚡ força
+  let forca = Math.abs(((curta - longa) / longa) * 100);
 
-    let entrada = direcao === "COMPRA"
-      ? preco * (1 - Math.random() * 0.002)
-      : preco * (1 + Math.random() * 0.002);
+  // 🎯 confiança (simulada mas coerente)
+  let confianca =
+    forca > 0.5 ? 80 + Math.random()*10 :
+    forca > 0.2 ? 60 + Math.random()*10 :
+    50 + Math.random()*10;
+
+  confianca = Math.floor(confianca);
+
+  // 🔁 gerar 2 operações coerentes
+  for (let i = 0; i < 2; i++) {
+
+    let direcao;
+
+    if (tendencia === "ALTA") direcao = "COMPRA";
+    else if (tendencia === "BAIXA") direcao = "VENDA";
+    else direcao = Math.random() > 0.5 ? "COMPRA" : "VENDA";
+
+    let tempo =
+      forca > 0.5 ? 5 :
+      forca > 0.2 ? 3 :
+      1;
 
     let op = document.createElement("div");
 
     op.style.background = "#0f172a";
-    op.style.padding = "12px";
+    op.style.padding = "14px";
     op.style.borderRadius = "10px";
     op.style.marginTop = "10px";
     op.style.borderLeft = direcao === "COMPRA"
@@ -255,8 +279,9 @@ function gerarOperacoes() {
 
     op.innerHTML = `
       <strong>${direcao}</strong><br>
-      Entrada: $ ${entrada.toFixed(2)}<br>
-      Tempo: ${tempo} min
+      Tendência: ${tendencia}<br>
+      Confiança: ${confianca}%<br>
+      Tempo sugerido: ${tempo} min
     `;
 
     container.appendChild(op);
