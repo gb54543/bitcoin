@@ -1,184 +1,274 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>AI Trader Pro</title>
+<meta charset="UTF-8">
+<title>Trader AI</title>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f1117;
-      color: #fff;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f0f0f;
+  color: white;
+}
 
-    header {
-      padding: 15px;
-      text-align: center;
-      background: #151823;
-      font-size: 20px;
-      font-weight: bold;
-    }
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 15px;
+}
 
-    .container {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 15px;
-      padding: 15px;
-    }
+.topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .box {
-      background: #151823;
-      border-radius: 10px;
-      padding: 15px;
-    }
+select {
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  background: #1a1a1a;
+  color: white;
+}
 
-    canvas {
-      width: 100% !important;
-      height: 350px !important;
-    }
+#grafico {
+  height: 350px;
+  margin-top: 10px;
+}
 
-    .moedas {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+.box {
+  background: #1a1a1a;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
 
-    .moedas button {
-      flex: 1;
-      padding: 8px;
-      border: none;
-      border-radius: 6px;
-      background: #1f2333;
-      color: white;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+.btn {
+  width: 100%;
+  padding: 10px;
+  background: #6c5cff;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    .moedas button:hover {
-      background: #2b3050;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
 
-    .info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      font-size: 13px;
-    }
-
-    .info div {
-      background: #1f2333;
-      padding: 8px;
-      border-radius: 6px;
-    }
-
-    .destaque {
-      font-size: 16px;
-      text-align: center;
-      margin-bottom: 10px;
-      padding: 10px;
-      background: #1f2333;
-      border-radius: 8px;
-    }
-
-    .zonas {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-
-    .upload {
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .upload label {
-      display: inline-block;
-      padding: 8px 15px;
-      background: #2b3050;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-<button onclick="analiseInteligente()" class="btn-ai">
-  Ativar Análise Inteligente
-</button>
-    .leitura {
-      margin-top: 10px;
-      font-size: 13px;
-      background: #1f2333;
-      padding: 10px;
-      border-radius: 6px;
-    }
-  </style>
+.item {
+  background: #141414;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+</style>
 </head>
 
 <body>
 
-<header>📊 AI Trader Pro</header>
-
 <div class="container">
 
-  <!-- GRAFICO -->
-  <div class="box">
-    <div class="moedas">
-      <button onclick="trocarMoeda('BTC')">BTC</button>
-      <button onclick="trocarMoeda('ETH')">ETH</button>
-      <button onclick="trocarMoeda('SOL')">SOL</button>
-      <button onclick="trocarMoeda('BNB')">BNB</button>
-      <button onclick="trocarMoeda('XRP')">XRP</button>
-    </div>
+<div class="topo">
+<h2>Trader AI</h2>
 
-    <canvas id="grafico"></canvas>
-  </div>
+<select onchange="trocarMoeda(this.value)">
+<option value="BTCUSDT">BTC</option>
+<option value="ETHUSDT">ETH</option>
+<option value="SOLUSDT">SOL</option>
+<option value="BNBUSDT">BNB</option>
+<option value="XRPUSDT">XRP</option>
+</select>
+</div>
 
-  <!-- ANALISE -->
-  <div class="box">
+<div id="grafico"></div>
 
-    <div class="destaque" id="sinal">Carregando...</div>
+<div class="box">
+<button class="btn" onclick="analiseInteligente()">Análise Inteligente</button>
+</div>
 
-    <div class="info">
-      <div>Tendência: <span id="tendencia"></span></div>
-      <div>Força: <span id="forca"></span></div>
-      <div>RSI: <span id="rsi"></span></div>
-      <div>Momentum: <span id="momentum"></span></div>
-      <div>Volatilidade: <span id="vol"></span></div>
-      <div>Score: <span id="score"></span></div>
-    </div>
+<div class="box grid">
+<div class="item">Tendência: <span id="tendencia">-</span></div>
+<div class="item">Força: <span id="forca">-</span></div>
+<div class="item">Momentum: <span id="momentum">-</span></div>
+<div class="item">Volatilidade: <span id="vol">-</span></div>
+<div class="item">Prob. Alta: <span id="probAlta">-</span></div>
+<div class="item">Prob. Baixa: <span id="probBaixa">-</span></div>
+<div class="item">Zona Compra: <span id="buyZone">-</span></div>
+<div class="item">Zona Venda: <span id="sellZone">-</span></div>
+<div class="item">Sinal: <span id="sinal">-</span></div>
+</div>
 
-    <div class="zonas">
-      <div>Compra: <span id="buyZone"></span></div>
-      <div>Venda: <span id="sellZone"></span></div>
-    </div>
-
-    <div class="zonas">
-      <div>Alta: <span id="probAlta"></span></div>
-      <div>Queda: <span id="probBaixa"></span></div>
-    </div>
-
-    <div class="leitura" id="leitura">
-      Analisando mercado...
-    </div>
-
-    <!-- UPLOAD INDICADOR -->
-    <div class="upload">
-      <label for="uploadIndicador">+ Adicionar Indicador</label>
-      <input type="file" id="uploadIndicador">
-    </div>
-
-  </div>
+<div class="box">
+<div id="leitura">Clique em análise inteligente...</div>
+</div>
 
 </div>
 
-<!-- JS -->
-<script src="script.js"></script>
+<script>
+
+// ======================
+// CONFIG
+// ======================
+
+let moeda = "BTCUSDT";
+
+// ======================
+// GRAFICO PROFISSIONAL
+// ======================
+
+const chart = LightweightCharts.createChart(document.getElementById('grafico'), {
+  height: 350,
+  layout: {
+    background: { color: '#0f0f0f' },
+    textColor: '#fff'
+  },
+  grid: {
+    vertLines: { color: '#1f1f1f' },
+    horzLines: { color: '#1f1f1f' }
+  }
+});
+
+const candles = chart.addCandlestickSeries();
+
+// ======================
+// CARREGAR VELAS
+// ======================
+
+async function carregar() {
+  const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=100`);
+  const data = await res.json();
+
+  const formatado = data.map(v => ({
+    time: v[0] / 1000,
+    open: +v[1],
+    high: +v[2],
+    low: +v[3],
+    close: +v[4]
+  }));
+
+  candles.setData(formatado);
+}
+
+carregar();
+
+// ======================
+// ATUALIZAÇÃO TEMPO REAL
+// ======================
+
+setInterval(async () => {
+  const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=2`);
+  const data = await res.json();
+
+  const v = data[data.length - 1];
+
+  candles.update({
+    time: v[0] / 1000,
+    open: +v[1],
+    high: +v[2],
+    low: +v[3],
+    close: +v[4]
+  });
+
+}, 2000);
+
+// ======================
+// TROCAR MOEDA
+// ======================
+
+function trocarMoeda(m) {
+  moeda = m;
+  carregar();
+}
+
+// ======================
+// ANALISE BASICA
+// ======================
+
+function calc(arr){
+  return arr.reduce((a,b)=>a+b,0)/arr.length;
+}
+
+let historico = [];
+
+setInterval(async () => {
+  const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${moeda}`);
+  const data = await res.json();
+
+  let preco = +data.price;
+
+  historico.push(preco);
+  if(historico.length > 50) historico.shift();
+
+  if(historico.length < 10) return;
+
+  let curta = calc(historico.slice(-5));
+  let longa = calc(historico);
+
+  let tendencia = curta > longa ? "ALTA" : "BAIXA";
+  let forca = ((curta-longa)/longa)*100;
+  let momentum = preco > historico[historico.length-2] ? "SUBINDO" : "CAINDO";
+
+  let max = Math.max(...historico);
+  let min = Math.min(...historico);
+  let vol = ((max-min)/min)*100;
+
+  document.getElementById("tendencia").innerText = tendencia;
+  document.getElementById("forca").innerText = forca.toFixed(2)+"%";
+  document.getElementById("momentum").innerText = momentum;
+  document.getElementById("vol").innerText = vol.toFixed(2)+"%";
+
+},1000);
+
+// ======================
+// ANALISE INTELIGENTE
+// ======================
+
+function analiseInteligente(){
+
+  if(historico.length < 20){
+    alert("Carregando dados...");
+    return;
+  }
+
+  let preco = historico[historico.length-1];
+
+  let max = Math.max(...historico);
+  let min = Math.min(...historico);
+
+  let suporte = min * 1.01;
+  let resistencia = max * 0.99;
+
+  let direcao = preco > historico[historico.length-5] ? "ALTA" : "BAIXA";
+
+  let probAlta = direcao === "ALTA" ? 72 : 28;
+  let probBaixa = 100 - probAlta;
+
+  document.getElementById("probAlta").innerText = probAlta+"%";
+  document.getElementById("probBaixa").innerText = probBaixa+"%";
+  document.getElementById("buyZone").innerText = suporte.toFixed(2);
+  document.getElementById("sellZone").innerText = resistencia.toFixed(2);
+  document.getElementById("sinal").innerText = direcao === "ALTA" ? "COMPRA" : "VENDA";
+
+  document.getElementById("leitura").innerText =
+  `Mercado em ${direcao}.
+Preço atual: ${preco.toFixed(2)}.
+
+Zona forte de compra próxima de ${suporte.toFixed(2)}.
+Zona de venda próxima de ${resistencia.toFixed(2)}.
+
+Maior probabilidade de ${direcao === "ALTA" ? "continuação de alta" : "queda"} no curto prazo.`;
+}
+
+</script>
 
 </body>
 </html>
