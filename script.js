@@ -1,7 +1,7 @@
-// ================= CONFIG =================
 const ctx = document.getElementById("grafico").getContext("2d");
 
 let moeda = "BTCUSDT";
+let historico = [];
 
 const moedas = {
   BTC: "BTCUSDT",
@@ -11,32 +11,29 @@ const moedas = {
   XRP: "XRPUSDT"
 };
 
-let historico = [];
-
-// ================= GRÁFICO =================
+// GRÁFICO MELHOR
 const grafico = new Chart(ctx, {
   type: "line",
   data: {
     labels: [],
     datasets: [{
-      label: "Preço",
       data: [],
-      tension: 0.2,
       borderWidth: 2,
-      pointRadius: 0
+      pointRadius: 0,
+      tension: 0.4
     }]
   },
   options: {
-    responsive: true,
     animation: false,
+    responsive: true,
     scales: {
       x: { display: false },
-      y: { beginAtZero: false }
+      y: { display: true }
     }
   }
 });
 
-// ================= TROCAR MOEDA =================
+// TROCAR MOEDA
 function trocarMoeda(m) {
   moeda = moedas[m];
   historico = [];
@@ -45,7 +42,7 @@ function trocarMoeda(m) {
   grafico.update();
 }
 
-// ================= PEGAR PREÇO (RÁPIDO) =================
+// PEGAR PREÇO
 async function getPreco() {
   try {
     const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${moeda}`);
@@ -56,148 +53,101 @@ async function getPreco() {
   }
 }
 
-// ================= ATUALIZAÇÃO RÁPIDA =================
+// ATUALIZAÇÃO
 setInterval(async () => {
-  const preco = await getPreco();
+
+  let preco = await getPreco();
   if (!preco) return;
 
-  // gráfico
-  if (grafico.data.labels.length > 50) {
+  historico.push(preco);
+  if (historico.length > 80) historico.shift();
+
+  // GRAFICO AGORA FLUI
+  grafico.data.labels.push("");
+  grafico.data.datasets[0].data.push(preco);
+
+  if (grafico.data.labels.length > 80) {
     grafico.data.labels.shift();
     grafico.data.datasets[0].data.shift();
   }
 
-  grafico.data.labels.push("");
-  grafico.data.datasets[0].data.push(preco);
   grafico.update();
 
   analisar(preco);
 
-}, 1200); // 🔥 atualiza rápido
+}, 1000);
 
-// ================= ANÁLISE INTELIGENTE =================
+// ANALISE NORMAL
 function analisar(preco) {
 
-  historico.push(preco);
-  if (historico.length > 100) historico.shift();
   if (historico.length < 15) return;
 
-  const media = arr => arr.reduce((a,b)=>a+b,0)/arr.length;
+  let media = arr => arr.reduce((a,b)=>a+b,0)/arr.length;
 
-  let curta = media(historico.slice(-7));
+  let curta = media(historico.slice(-5));
   let longa = media(historico);
 
   let tendencia = curta > longa ? "ALTA" : "BAIXA";
   let forca = ((curta - longa)/longa)*100;
 
-  // RSI
-  let ganhos=0, perdas=0;
-  for(let i=1;i<historico.length;i++){
-    let d = historico[i]-historico[i-1];
-    if(d>0) ganhos+=d; else perdas-=d;
-  }
-  let rsi = 100 - (100/(1+(ganhos/(perdas||1))));
+  let momentum = preco > historico[historico.length-2] ? "FORTE" : "FRACO";
 
-  // Momentum
-  let momentum = preco > historico[historico.length-2] ? "SUBINDO" : "CAINDO";
-
-  // Volatilidade
   let max = Math.max(...historico);
   let min = Math.min(...historico);
+
   let vol = ((max-min)/min)*100;
 
-  // SCORE INTELIGENTE
-  let score = 0;
+  document.getElementById("tendencia").innerText = tendencia;
+  document.getElementById("forca").innerText = forca.toFixed(2)+"%";
+  document.getElementById("momentum").innerText = momentum;
+  document.getElementById("vol").innerText = vol.toFixed(2)+"%";
+}
 
-  if(tendencia==="ALTA") score+=2;
-  if(forca>0.1) score+=2;
-  if(rsi<30) score+=3;
-  if(rsi>70) score-=3;
-  if(momentum==="SUBINDO") score+=2;
-  if(vol>0.4) score+=1;
+// 🔥 ANALISE INTELIGENTE (NOVA)
+function analiseInteligente() {
 
-  // PROBABILIDADE
-  let probAlta = Math.min(100, 50 + score*7);
+  if (historico.length < 20) {
+    alert("Aguardando dados...");
+    return;
+  }
+
+  let preco = historico[historico.length-1];
+
+  let max = Math.max(...historico);
+  let min = Math.min(...historico);
+
+  let suporte = min * 1.01;
+  let resistencia = max * 0.99;
+
+  let distanciaTopo = ((resistencia - preco)/preco)*100;
+  let distanciaFundo = ((preco - suporte)/preco)*100;
+
+  let direcao = preco > historico[historico.length-5] ? "SUBINDO" : "CAINDO";
+
+  let leitura = `
+Mercado ${direcao}.
+Preço atual está ${(distanciaTopo < 1 ? "próximo da resistência" : "longe do topo")}.
+
+Zona de suporte em $${suporte.toFixed(2)}  
+Zona de resistência em $${resistencia.toFixed(2)}
+
+Probabilidade maior de ${
+    direcao === "SUBINDO" ? "continuação de alta" : "queda"
+}.
+`;
+
+  document.getElementById("leitura").innerText = leitura;
+
+  // PROBABILIDADE FORTE
+  let probAlta = direcao === "SUBINDO" ? 70 : 30;
   let probBaixa = 100 - probAlta;
 
-  // ZONAS
-  let buyZone = (preco * 0.995).toFixed(2);
-  let sellZone = (preco * 1.005).toFixed(2);
+  document.getElementById("probAlta").innerText = probAlta+"%";
+  document.getElementById("probBaixa").innerText = probBaixa+"%";
 
-  // SINAL
-  let sinal = "NEUTRO";
-  if(score >= 7) sinal = "COMPRA FORTE";
-  else if(score >= 4) sinal = "COMPRA";
-  else if(score <= 1) sinal = "VENDA";
+  document.getElementById("buyZone").innerText = "$"+suporte.toFixed(2);
+  document.getElementById("sellZone").innerText = "$"+resistencia.toFixed(2);
 
-  // LEITURA HUMANA (TOP)
-  let leitura = "";
-
-  if(sinal === "COMPRA FORTE"){
-    leitura = "Alta forte com pressão compradora dominante. Possível continuação de movimento.";
-  } 
-  else if(sinal === "COMPRA"){
-    leitura = "Mercado com viés de alta, mas ainda precisa de confirmação.";
-  }
-  else if(sinal === "VENDA"){
-    leitura = "Pressão vendedora ativa, possível continuação de queda.";
-  }
-  else {
-    leitura = "Mercado lateral, indecisão entre compradores e vendedores.";
-  }
-
-  atualizarUI({
-    sinal,
-    tendencia,
-    forca,
-    rsi,
-    momentum,
-    vol,
-    score,
-    probAlta,
-    probBaixa,
-    buyZone,
-    sellZone,
-    leitura
-  });
+  document.getElementById("sinal").innerText =
+    direcao === "SUBINDO" ? "COMPRA" : "VENDA";
 }
-
-// ================= ATUALIZAR UI (SEM BUG) =================
-function atualizarUI(d) {
-
-  const set = (id, val) => {
-    const el = document.getElementById(id);
-    if(el) el.innerText = val;
-  };
-
-  set("sinal", d.sinal);
-  set("tendencia", d.tendencia);
-  set("forca", d.forca.toFixed(2)+"%");
-  set("rsi", d.rsi.toFixed(0));
-  set("momentum", d.momentum);
-  set("vol", d.vol.toFixed(2)+"%");
-  set("score", d.score);
-
-  set("probAlta", d.probAlta.toFixed(0)+"%");
-  set("probBaixa", d.probBaixa.toFixed(0)+"%");
-
-  set("buyZone", "$"+d.buyZone);
-  set("sellZone", "$"+d.sellZone);
-
-  set("leitura", d.leitura);
-}
-
-// ================= UPLOAD DE INDICADOR =================
-document.getElementById("uploadIndicador")?.addEventListener("change", function(e){
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function(evt){
-    alert("Indicador carregado (simulação). Em breve você poderá integrar lógica real.");
-    console.log(evt.target.result);
-  };
-
-  reader.readAsText(file);
-});
