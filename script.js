@@ -117,7 +117,7 @@ function iniciarTimer() {
 }
 
 // 🔄 TROCAR MOEDA
- 
+  const select = document.getElementById("moeda");
 function iniciarSelect() {
   document.addEventListener("change", (e) => {
 
