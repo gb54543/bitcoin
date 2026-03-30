@@ -1,4 +1,4 @@
-// 🔗 Mapeamento moedas → Binance
+// 🔗 Moedas
 const pares = {
   bitcoin: "BTCUSDT",
   ethereum: "ETHUSDT",
@@ -9,135 +9,116 @@ const pares = {
 
 let moedaAtual = "bitcoin";
 let historico = [];
-let widget = null;
 
-// 📊 Criar gráfico
+// 📊 Criar gráfico com segurança
 function criarGrafico(par) {
-  document.getElementById("chart").innerHTML = "";
+  const el = document.getElementById("chart");
+  if (!el) return;
 
-  widget = new TradingView.widget({
+  el.innerHTML = "";
+
+  if (typeof TradingView === "undefined") {
+    console.log("TradingView não carregou ainda...");
+    return;
+  }
+
+  new TradingView.widget({
     width: "100%",
     height: 300,
     symbol: "BINANCE:" + par,
     interval: "1",
     theme: "dark",
-    style: "1",
     container_id: "chart"
   });
 }
 
-// 💰 Pegar preço real
+// 💰 Preço
 async function pegarPreco() {
-  const par = pares[moedaAtual];
+  try {
+    const par = pares[moedaAtual];
 
-  const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${par}`);
-  const data = await res.json();
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${par}`);
+    const data = await res.json();
 
-  const preco = parseFloat(data.price);
+    const preco = parseFloat(data.price);
 
-  document.getElementById("preco").innerText =
-    "$ " + preco.toLocaleString();
+    const el = document.getElementById("preco");
+    if (el) {
+      el.innerText = "$ " + preco.toLocaleString();
+    }
 
-  analisar(preco);
+    analisar(preco);
+
+  } catch (erro) {
+    console.log("Erro API:", erro);
+  }
 }
 
-// 🧠 Análise inteligente (melhorada)
+// 🧠 Análise
 function analisar(preco) {
   historico.push(preco);
-
   if (historico.length > 30) historico.shift();
 
   let media = historico.reduce((a, b) => a + b, 0) / historico.length;
 
-  let direcao = preco > media ? "alta" : "baixa";
-
+  let direcao = preco > media ? "Alta" : "Baixa";
   let diff = ((preco - media) / media) * 100;
   let forca = Math.abs(diff);
 
-  // 📊 Volatilidade
-  let max = Math.max(...historico);
-  let min = Math.min(...historico);
-  let volatilidade = ((max - min) / min) * 100;
-
-  // 🎯 Sinal
   let sinal = "";
 
-  if (direcao === "alta" && forca > 0.3) {
+  if (direcao === "Alta" && forca > 0.3) {
     sinal = "🟢 Compra forte";
-  } else if (direcao === "alta") {
+  } else if (direcao === "Alta") {
     sinal = "🟢 Compra leve";
-  } else if (direcao === "baixa" && forca > 0.3) {
+  } else if (direcao === "Baixa" && forca > 0.3) {
     sinal = "🔴 Venda forte";
   } else {
     sinal = "🔴 Venda leve";
   }
 
-  // 🧠 Confiança
-  let confianca = "";
+  let confianca = forca > 0.5 ? "🔥 Alta" : forca > 0.2 ? "⚖️ Média" : "❄️ Baixa";
 
-  if (forca > 0.5) confianca = "🔥 Alta";
-  else if (forca > 0.2) confianca = "⚖️ Média";
-  else confianca = "❄️ Baixa";
-
-  // 🖥️ Atualizar tela
-  document.getElementById("sinal").innerText = `Sinal: ${sinal}`;
-  document.getElementById("tendencia").innerText = `Tendência: ${direcao}`;
-  document.getElementById("forca").innerText = `Força: ${forca.toFixed(2)}%`;
-  document.getElementById("volatilidade").innerText =
-    `Volatilidade: ${volatilidade.toFixed(2)}% | Confiança: ${confianca}`;
+  const el = document.getElementById("sinal");
+  if (el) {
+    el.innerText = `${sinal}\nConfiança: ${confianca}`;
+  }
 }
 
-  // 🎯 Lógica mais refinada
-  if (direcao === "alta" && forca > 0.3) {
-    sinal = "🟢 Compra forte (tendência de alta)";
-  } 
-  else if (direcao === "alta") {
-    sinal = "🟢 Possível compra (alta leve)";
-  }
-  else if (direcao === "baixa" && forca > 0.3) {
-    sinal = "🔴 Venda forte (tendência de baixa)";
-  } 
-  else {
-    sinal = "🔴 Possível venda (baixa leve)";
+// ⏱️ TIMER (corrigido)
+function iniciarTimer() {
+  function atualizar() {
+    const el = document.getElementById("timer");
+    if (!el) return;
+
+    const agora = new Date();
+    const restante = 60 - agora.getSeconds();
+
+    el.innerText = "00:" + String(restante).padStart(2, "0");
   }
 
-  // 🧠 Confiança
-  let confianca = "";
-
-  if (forca > 0.5) confianca = "🔥 Alta confiança";
-  else if (forca > 0.2) confianca = "⚖️ Média confiança";
-  else confianca = "❄️ Baixa confiança";
-
-  document.getElementById("sinal").innerText =
-    `${sinal}\n${confianca}`;
+  atualizar();
+  setInterval(atualizar, 1000);
 }
 
-// 🔄 Trocar moeda
-document.getElementById("moeda").addEventListener("change", (e) => {
-  moedaAtual = e.target.value;
-  historico = [];
+// 🔄 Troca moeda
+const select = document.getElementById("moeda");
+if (select) {
+  select.addEventListener("change", (e) => {
+    moedaAtual = e.target.value;
+    historico = [];
+    criarGrafico(pares[moedaAtual]);
+    pegarPreco();
+  });
+}
 
+// 🚀 INIT (espera carregar tudo)
+window.onload = () => {
   criarGrafico(pares[moedaAtual]);
   pegarPreco();
-});
+  iniciarTimer();
 
-// 🚀 Inicializar
-criarGrafico(pares[moedaAtual]);
-pegarPreco();
-setInterval(pegarPreco, 3000);
-// ⏱️ Timer da vela (1 minuto)
-function iniciarTimer() {
-  setInterval(() => {
-    const agora = new Date();
+  setInterval(pegarPreco, 3000);
+};
 
-    const segundos = agora.getSeconds();
-    const restante = 60 - segundos;
 
-    const min = String(Math.floor(restante / 60)).padStart(2, "0");
-    const sec = String(restante % 60).padStart(2, "0");
-
-    document.getElementById("timer").innerText = `${min}:${sec}`;
-  }, 1000);
-}
-
-iniciarTimer();
