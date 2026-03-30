@@ -202,3 +202,74 @@ ${direcao.includes("ALTA") ?
 "Continuação de alta com possíveis correções curtas." :
 "Pressão vendedora com risco de novas quedas."}`;
 };
+// ESPERA CARREGAR A PÁGINA (ESSENCIAL)
+window.onload = () => {
+
+  const graficoDiv = document.getElementById("grafico");
+
+  if (!graficoDiv) {
+    alert("Div do gráfico não encontrada");
+    return;
+  }
+
+  if (typeof LightweightCharts === "undefined") {
+    alert("Biblioteca do gráfico não carregou");
+    return;
+  }
+
+  // CRIA O GRAFICO
+  const chart = LightweightCharts.createChart(graficoDiv, {
+    width: graficoDiv.clientWidth,
+    height: 400,
+    layout: {
+      background: { color: "#0d1117" },
+      textColor: "#fff"
+    }
+  });
+
+  const candleSeries = chart.addCandlestickSeries();
+
+  // DADOS FAKE (GARANTE QUE APARECE)
+  let dados = [];
+  let base = 30000;
+
+  for (let i = 0; i < 50; i++) {
+    let open = base;
+    let close = open + (Math.random() - 0.5) * 500;
+
+    dados.push({
+      time: Math.floor(Date.now()/1000) - (50 - i)*60,
+      open: open,
+      high: Math.max(open, close) + 100,
+      low: Math.min(open, close) - 100,
+      close: close
+    });
+
+    base = close;
+  }
+
+  candleSeries.setData(dados);
+
+  // ANIMAÇÃO (PROVA QUE FUNCIONA)
+  setInterval(() => {
+
+    let last = dados[dados.length - 1];
+    let open = last.close;
+    let close = open + (Math.random() - 0.5) * 200;
+
+    let nova = {
+      time: Math.floor(Date.now()/1000),
+      open: open,
+      high: Math.max(open, close) + 50,
+      low: Math.min(open, close) - 50,
+      close: close
+    };
+
+    dados.push(nova);
+    dados.shift();
+
+    candleSeries.update(nova);
+
+  }, 2000);
+
+};
