@@ -15,7 +15,7 @@ function criarGrafico() {
   const el = document.getElementById("chart");
   if (!el || typeof TradingView === "undefined") return;
 
-  el.innerHTML = "";
+  el.innerHTML = ""; // LIMPA TUDO
 
   new TradingView.widget({
     width: "100%",
@@ -24,6 +24,7 @@ function criarGrafico() {
     interval: "1",
     theme: "dark",
     style: "1",
+    locale: "br",
     container_id: "chart"
   });
 }
