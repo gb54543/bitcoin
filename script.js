@@ -59,22 +59,45 @@ function analisar(preco) {
 
   let media = historico.reduce((a,b)=>a+b,0)/historico.length;
 
-  let direcao = preco > media ? "Alta" : "Baixa";
   let diff = ((preco - media)/media)*100;
   let forca = Math.abs(diff);
 
+  let tendencia = preco > media ? "Alta 📈" : "Baixa 📉";
+
   let sinal =
-    direcao === "Alta"
-      ? (forca > 0.3 ? "🟢 Compra forte" : "🟢 Compra leve")
-      : (forca > 0.3 ? "🔴 Venda forte" : "🔴 Venda leve");
+    preco > media
+      ? (forca > 0.3 ? "🟢 Compra Forte" : "🟢 Compra Leve")
+      : (forca > 0.3 ? "🔴 Venda Forte" : "🔴 Venda Leve");
 
   let confianca =
     forca > 0.5 ? "🔥 Alta"
     : forca > 0.2 ? "⚖️ Média"
     : "❄️ Baixa";
 
+  // 📊 volatilidade
+  let max = Math.max(...historico);
+  let min = Math.min(...historico);
+  let volatilidade = ((max - min)/min)*100;
+
+  // 🎯 momentum
+  let ultimo = historico[historico.length - 2] || preco;
+  let momentum = preco > ultimo ? "Subindo 🚀" : "Caindo ⬇️";
+
   const el = document.getElementById("sinal");
-  if (el) el.innerText = `${sinal}\nConfiança: ${confianca}`;
+
+  if (el) {
+    el.innerHTML = `
+      <div class="${preco > media ? 'green' : 'red'}" style="font-size:18px;">
+        ${sinal}
+      </div>
+
+      <div class="info">📊 Tendência: ${tendencia}</div>
+      <div class="info">💪 Força: ${forca.toFixed(2)}%</div>
+      <div class="info">⚡ Momentum: ${momentum}</div>
+      <div class="info">🌪️ Volatilidade: ${volatilidade.toFixed(2)}%</div>
+      <div class="info">🎯 Confiança: ${confianca}</div>
+    `;
+  }
 }
 
 // ⏱️ TIMER
