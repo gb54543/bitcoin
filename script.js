@@ -10,13 +10,6 @@ const pares = {
 let moedaAtual = "bitcoin";
 let historico = [];
 
-let statsIA = {
-  acertos: 0,
-  erros: 0
-};
-
-let ultimaOperacaoIA = null;
-let ultimaAssinaturaMercado = "";
 };
 // 📊 GRÁFICO (seguro)
 function criarGrafico() {
