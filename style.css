@@ -272,3 +272,34 @@ select {
   border-radius: 10px;
   text-align: center;
 }
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: #020617;
+  border-bottom: 1px solid #1f2937;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #3b82f6;
+}
+
+.status {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  display: inline-block;
+  border-radius: 50%;
+  margin-right: 6px;
+}
