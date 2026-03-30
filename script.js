@@ -374,7 +374,6 @@ function assinaturaMercadoAtual() {
 
 function operacaoInteligente() {
   const assinatura = assinaturaMercadoAtual();
-validarOperacao(resultado);
   if (ultimaOperacaoIA && assinatura === ultimaAssinaturaMercado) {
     renderOperacaoIA(ultimaOperacaoIA);
     return;
