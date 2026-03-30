@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Crypto Analyzer X</title>
+
   <link rel="stylesheet" href="style.css">
 
-  <!-- Ícones profissionais -->
+  <!-- Ícones -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
 
 <header>
@@ -16,9 +18,10 @@
 
 <div class="container">
 
+  <!-- 🔹 Escolher moeda -->
   <div class="card">
-    <h2><i class="fa-solid fa-coins"></i> Escolher Moeda</h2>
-    
+    <h2><i class="fa-solid fa-coins"></i> Moeda</h2>
+
     <div class="select-box">
       <select id="moeda">
         <option value="bitcoin">Bitcoin (BTC)</option>
@@ -27,32 +30,66 @@
         <option value="ripple">XRP</option>
         <option value="cardano">Cardano (ADA)</option>
       </select>
-      <i class="fa-solid fa-chevron-down"></i>
     </div>
   </div>
 
+  <!-- 💰 Preço -->
   <div class="card destaque">
     <h2><i class="fa-solid fa-dollar-sign"></i> Preço</h2>
-    <p id="preco">...</p>
+    <p id="preco">Carregando...</p>
   </div>
 
+  <!-- ⏱️ Timer -->
   <div class="card">
+    <h2><i class="fa-solid fa-clock"></i> Próxima vela</h2>
+    <p id="timer">00:00</p>
+  </div>
+
+  <!-- 📊 Gráfico GRANDE -->
+  <div class="card grafico-full">
     <h2><i class="fa-solid fa-chart-area"></i> Gráfico</h2>
     <div id="chart"></div>
   </div>
-<div class="card">
-  <h2>⏱️ Próxima vela</h2>
-  <p id="timer">00:00</p>
-</div>
 
+  <!-- 🧠 Análise -->
   <div class="card sinal">
-  <h2><i class="fa-solid fa-brain"></i> Análise Inteligente</h2>
-  <div id="sinal"></div>
-</div>
-</div>
+    <h2><i class="fa-solid fa-brain"></i> Análise</h2>
+
+    <!-- Ação principal -->
+    <div class="sinal-box" id="sinalBox">
+      <span id="acao">Carregando...</span>
+      <span id="confianca"></span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+
+      <div class="stat">
+        <span>Tendência</span>
+        <strong id="tendencia">-</strong>
+      </div>
+
+      <div class="stat">
+        <span>Força</span>
+        <strong id="forca">-</strong>
+      </div>
+
+      <div class="stat">
+        <span>Momentum</span>
+        <strong id="momentum">-</strong>
+      </div>
+
+      <div class="stat">
+        <span>Volatilidade</span>
+        <strong id="volatilidade">-</strong>
+      </div>
+
+    </div>
+  </div>
 
 </div>
 
+<!-- Scripts -->
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script src="script.js"></script>
 
