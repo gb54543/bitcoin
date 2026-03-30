@@ -6,51 +6,37 @@
 
 <link rel="stylesheet" href="style.css">
 
+<!-- BIBLIOTECA DO GRAFICO -->
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-</head>
 
+</head>
 <body>
 
 <div class="container">
 
 <header>
-<h1>Trader AI Pro</h1>
+<h1>Trader AI</h1>
 
 <select id="moeda">
 <option value="BTCUSDT">BTC</option>
 <option value="ETHUSDT">ETH</option>
 <option value="SOLUSDT">SOL</option>
-<option value="BNBUSDT">BNB</option>
-<option value="XRPUSDT">XRP</option>
 </select>
 </header>
 
+<!-- IMPORTANTE: TEM QUE EXISTIR -->
 <div id="grafico"></div>
 
 <div class="painel">
-
 <button id="btnAI">Análise Inteligente</button>
 
-<div class="grid">
-<div><b>Tendência</b><span id="tendencia">-</span></div>
-<div><b>Força</b><span id="forca">-</span></div>
-<div><b>Momentum</b><span id="momentum">-</span></div>
-<div><b>Volatilidade</b><span id="vol">-</span></div>
-<div><b>Prob Alta</b><span id="probAlta">-</span></div>
-<div><b>Prob Baixa</b><span id="probBaixa">-</span></div>
-<div><b>Compra</b><span id="buyZone">-</span></div>
-<div><b>Venda</b><span id="sellZone">-</span></div>
-<div><b>Sinal</b><span id="sinal">-</span></div>
-</div>
-
-<div class="leitura" id="leitura">
-Clique em análise inteligente
+<div id="leitura">Aguardando...</div>
 </div>
 
 </div>
 
-</div>
-
+<!-- JS NO FINAL (OBRIGATÓRIO) -->
 <script src="script.js"></script>
+
 </body>
 </html>
