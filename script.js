@@ -146,3 +146,21 @@ window.addEventListener("load", () => {
   pegarPreco();
   setInterval(pegarPreco, 2000);
 });
+function iniciarBotoesMoeda() {
+  const botoes = document.querySelectorAll(".moeda");
+
+  botoes.forEach(btn => {
+    btn.addEventListener("click", () => {
+
+      // remover ativo
+      botoes.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      moedaAtual = btn.dataset.moeda;
+      historico = [];
+
+      criarGrafico();
+      pegarPreco();
+    });
+  });
+}
