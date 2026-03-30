@@ -119,17 +119,29 @@ function iniciarTimer() {
 }
 
 // 🔄 TROCAR MOEDA
-function iniciarSelect() {
-  const select = document.getElementById("moeda");
+function iniciarBotoesMoeda() {
+  const botoes = document.querySelectorAll(".moeda");
 
-  if (!select) return;
+  botoes.forEach(btn => {
+    btn.onclick = () => {
 
-  select.addEventListener("change", (e) => {
-    moedaAtual = e.target.value;
-    historico = [];
+      // UI ativa
+      document.querySelectorAll(".moeda")
+        .forEach(b => b.classList.remove("active"));
 
-    criarGrafico();
-    pegarPreco();
+      btn.classList.add("active");
+
+      // troca moeda
+      moedaAtual = btn.dataset.moeda;
+      historico = [];
+
+      // atualiza tudo
+      criarGrafico();
+
+      setTimeout(() => {
+        pegarPreco();
+      }, 300);
+    };
   });
 }
 
