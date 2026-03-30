@@ -4,17 +4,22 @@
   <meta charset="UTF-8">
   <title>Crypto Analyzer X</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Ícones profissionais -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 
-  <header>
-    <h1>⚡ Crypto Analyzer X</h1>
-  </header>
+<header>
+  <h1><i class="fa-solid fa-chart-line"></i> Crypto Analyzer X</h1>
+</header>
 
-  <div class="container">
+<div class="container">
 
-    <div class="card">
-      <h2>💱 Escolha a moeda</h2>
+  <div class="card">
+    <h2><i class="fa-solid fa-coins"></i> Escolher Moeda</h2>
+    
+    <div class="select-box">
       <select id="moeda">
         <option value="bitcoin">Bitcoin (BTC)</option>
         <option value="ethereum">Ethereum (ETH)</option>
@@ -22,27 +27,29 @@
         <option value="ripple">XRP</option>
         <option value="cardano">Cardano (ADA)</option>
       </select>
+      <i class="fa-solid fa-chevron-down"></i>
     </div>
-
-    <div class="card preco-box">
-      <h2>💰 Preço Atual</h2>
-      <p id="preco">...</p>
-    </div>
-
-    <div class="card">
-      <h2>📊 Gráfico</h2>
-      <div id="chart"></div>
-    </div>
-
-    <div class="card sinal-box">
-      <h2>📈 Sinal</h2>
-      <p id="sinal">Analisando...</p>
-    </div>
-
   </div>
 
-  <script src="https://s3.tradingview.com/tv.js"></script>
-  <script src="script.js"></script>
+  <div class="card destaque">
+    <h2><i class="fa-solid fa-dollar-sign"></i> Preço</h2>
+    <p id="preco">...</p>
+  </div>
+
+  <div class="card">
+    <h2><i class="fa-solid fa-chart-area"></i> Gráfico</h2>
+    <div id="chart"></div>
+  </div>
+
+  <div class="card sinal">
+    <h2><i class="fa-solid fa-brain"></i> Análise</h2>
+    <p id="sinal">Analisando...</p>
+  </div>
+
+</div>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
