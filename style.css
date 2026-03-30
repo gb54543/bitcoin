@@ -1,131 +1,79 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: #0b0f1a;
+  background: #0d1117;
   color: white;
 }
 
 .container {
   max-width: 1100px;
   margin: auto;
-  padding: 20px;
-}
-
-h1 {
-  text-align: center;
-}
-
-/* moedas */
-.moedas {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-.moeda {
-  flex: 1;
-  padding: 10px;
-  background: #1f2937;
-  border: none;
-  color: #aaa;
-  cursor: pointer;
-}
-
-.moeda.active {
-  background: #2563eb;
-  color: white;
-}
-
-/* info */
-.info {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.box {
-  flex: 1;
-  background: #111827;
-  padding: 12px;
-  text-align: center;
-  border-radius: 8px;
-}
-
-/* gráfico */
-#chart {
-  height: 420px;
-  margin-bottom: 15px;
-}
-
-/* análise */
-.analise {
-  background: #111827;
   padding: 15px;
-  border-radius: 10px;
 }
 
-#sinal {
-  text-align: center;
-  font-size: 22px;
-  margin-bottom: 10px;
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.grid div {
-  background: #1f2937;
-  padding: 10px;
-  text-align: center;
+select {
+  background: #161b22;
+  color: white;
+  border: none;
+  padding: 6px;
   border-radius: 6px;
 }
 
-.grid span {
-  font-size: 12px;
-  color: #aaa;
-}
-.big-sinal {
-  font-size: 26px;
-  text-align: center;
-  margin-bottom: 10px;
-  font-weight: bold;
+#grafico {
+  height: 420px;
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.probabilidades {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 15px;
-  font-size: 14px;
-}
-
-.zona {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-.leitura {
-  margin-top: 15px;
-  background: #0f172a;
+.painel {
+  margin-top: 10px;
+  background: #161b22;
   padding: 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #cbd5e1;
-  line-height: 1.4;
+  border-radius: 10px;
 }
-.btn-ai {
+
+#btnAI {
   width: 100%;
-  padding: 10px;
-  background: #6c5cff;
+  padding: 12px;
+  background: linear-gradient(45deg, #6c5cff, #00c3ff);
   border: none;
   border-radius: 8px;
   color: white;
-  margin-top: 10px;
-  cursor: pointer;
   font-weight: bold;
+  cursor: pointer;
+}
+
+.grid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.grid div {
+  background: #0d1117;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.grid span {
+  display: block;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+.leitura {
+  margin-top: 10px;
+  background: #0d1117;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
 }
