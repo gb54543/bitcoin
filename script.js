@@ -122,8 +122,8 @@ function iniciarTimer() {
 
   if (!select) return;
 
-  select.addEventListener("change", () => {
-    moedaAtual = select.value;
+  select.addEventListener("change", (e) => {
+    moedaAtual = e.target.value;
     historico = [];
 
     console.log("Moeda:", moedaAtual);
@@ -132,17 +132,6 @@ function iniciarTimer() {
     pegarPreco();
   });
 }
-  if (!select) return;
-
-  select.addEventListener("change", (e) => {
-    moedaAtual = e.target.value;
-    historico = [];
-
-    criarGrafico();
-    pegarPreco();
-  });
-}
-
 // 🚀 INICIAR TUDO
 window.addEventListener("load", () => {
   iniciarSelect();
