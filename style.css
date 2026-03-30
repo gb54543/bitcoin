@@ -63,3 +63,54 @@ header {
   font-size: 14px;
   opacity: 0.8;
 }
+.grafico-full {
+  grid-column: span 2;
+  padding: 10px;
+}
+
+#chart {
+  height: 500px;
+  border-radius: 15px;
+  overflow: hidden;
+}
+.sinal-box {
+  text-align: center;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.compra {
+  background: rgba(0,255,150,0.1);
+  color: #00ff9f;
+}
+
+.venda {
+  background: rgba(255,50,50,0.1);
+  color: #ff4d4d;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat {
+  background: #1a1a2e;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.stat span {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.stat strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 16px;
+}
