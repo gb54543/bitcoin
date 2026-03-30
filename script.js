@@ -376,7 +376,7 @@ function assinaturaMercadoAtual() {
 
 function operacaoInteligente() {
   const assinatura = assinaturaMercadoAtual();
-
+validarOperacao(resultado);
   if (ultimaOperacaoIA && assinatura === ultimaAssinaturaMercado) {
     renderOperacaoIA(ultimaOperacaoIA);
     return;
@@ -394,3 +394,51 @@ window.addEventListener("load", () => {
     btnOp.onclick = operacaoInteligente;
   }
 });
+function validarOperacao(op) {
+
+  if (op.direcao === "SEM ENTRADA") return;
+
+  const precoEntrada = historico[historico.length - 1];
+
+  let tempo = 1;
+
+  if (op.prazo.includes("3")) tempo = 3;
+  if (op.prazo.includes("5")) tempo = 5;
+
+  setTimeout(() => {
+
+    const precoFinal = historico[historico.length - 1];
+
+    let acertou = false;
+
+    if (op.direcao === "COMPRA" && precoFinal > precoEntrada) {
+      acertou = true;
+    }
+
+    if (op.direcao === "VENDA" && precoFinal < precoEntrada) {
+      acertou = true;
+    }
+
+    if (acertou) {
+      statsIA.acertos++;
+    } else {
+      statsIA.erros++;
+    }
+
+    atualizarStatsIA();
+
+  }, tempo * 60 * 1000); // minutos reais
+
+}
+function atualizarStatsIA() {
+
+  const total = statsIA.acertos + statsIA.erros;
+
+  const taxa = total > 0
+    ? ((statsIA.acertos / total) * 100).toFixed(0)
+    : 0;
+
+  document.getElementById("acertos").innerText = statsIA.acertos;
+  document.getElementById("erros").innerText = statsIA.erros;
+  document.getElementById("taxa").innerText = taxa + "%";
+}
