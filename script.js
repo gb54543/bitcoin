@@ -47,6 +47,15 @@ elPreco.style.transform = "scale(1.1)";
 setTimeout(() => {
   elPreco.style.transform = "scale(1)";
 }, 150);
+      if (!window.precoAnterior) window.precoAnterior = preco;
+
+if (preco > window.precoAnterior) {
+  elPreco.style.color = "#22c55e"; // verde
+} else if (preco < window.precoAnterior) {
+  elPreco.style.color = "#ef4444"; // vermelho
+}
+
+window.precoAnterior = preco;
     }
 
     analisar(preco);
