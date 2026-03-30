@@ -62,41 +62,43 @@ function analisar(preco) {
   let diff = ((preco - media)/media)*100;
   let forca = Math.abs(diff);
 
-  let tendencia = preco > media ? "Alta 📈" : "Baixa 📉";
+  let tendencia = preco > media ? "Alta" : "Baixa";
 
-  let sinal =
-    preco > media
-      ? (forca > 0.3 ? "🟢 Compra Forte" : "🟢 Compra Leve")
-      : (forca > 0.3 ? "🔴 Venda Forte" : "🔴 Venda Leve");
+  let acao = "";
+  let classe = "";
+
+  if (preco > media) {
+    acao = forca > 0.3 ? "COMPRAR" : "COMPRA FRACA";
+    classe = "compra";
+  } else {
+    acao = forca > 0.3 ? "VENDER" : "VENDA FRACA";
+    classe = "venda";
+  }
 
   let confianca =
-    forca > 0.5 ? "🔥 Alta"
-    : forca > 0.2 ? "⚖️ Média"
-    : "❄️ Baixa";
+    forca > 0.5 ? "Alta confiança"
+    : forca > 0.2 ? "Confiança média"
+    : "Baixa confiança";
 
-  // 📊 volatilidade
+  let ultimo = historico[historico.length - 2] || preco;
+  let momentum = preco > ultimo ? "Subindo" : "Caindo";
+
   let max = Math.max(...historico);
   let min = Math.min(...historico);
   let volatilidade = ((max - min)/min)*100;
 
-  // 🎯 momentum
-  let ultimo = historico[historico.length - 2] || preco;
-  let momentum = preco > ultimo ? "Subindo 🚀" : "Caindo ⬇️";
+  // 🎨 Atualizar UI bonita
+  const box = document.getElementById("sinalBox");
+  box.className = "sinal-box " + classe;
 
-  const el = document.getElementById("sinal");
+  document.getElementById("acao").innerText = acao;
+  document.getElementById("confianca").innerText = " • " + confianca;
 
-  if (el) {
-    el.innerHTML = `
-      <div class="${preco > media ? 'green' : 'red'}" style="font-size:18px;">
-        ${sinal}
-      </div>
-
-      <div class="info">📊 Tendência: ${tendencia}</div>
-      <div class="info">💪 Força: ${forca.toFixed(2)}%</div>
-      <div class="info">⚡ Momentum: ${momentum}</div>
-      <div class="info">🌪️ Volatilidade: ${volatilidade.toFixed(2)}%</div>
-      <div class="info">🎯 Confiança: ${confianca}</div>
-    `;
+  document.getElementById("tendencia").innerText = tendencia;
+  document.getElementById("forca").innerText = forca.toFixed(2) + "%";
+  document.getElementById("momentum").innerText = momentum;
+  document.getElementById("volatilidade").innerText = volatilidade.toFixed(2) + "%";
+}
   }
 }
 
