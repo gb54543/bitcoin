@@ -88,3 +88,33 @@ h1 {
   font-size: 12px;
   color: #aaa;
 }
+.big-sinal {
+  font-size: 26px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.probabilidades {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.zona {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.leitura {
+  margin-top: 15px;
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
