@@ -210,3 +210,111 @@ ${direcao.includes("ALTA") ?
 "Continuação de alta com possíveis correções curtas." :
 "Pressão vendedora com risco de novas quedas."}`;
 };
+// ESPERA HTML CARREGAR (ESSENCIAL)
+window.addEventListener("DOMContentLoaded", () => {
+
+  let moeda = "BTCUSDT";
+  let historico = [];
+
+  const graficoDiv = document.getElementById("grafico");
+
+  if (!graficoDiv) {
+    alert("ERRO: div grafico não encontrada");
+    return;
+  }
+
+  if (typeof LightweightCharts === "undefined") {
+    alert("ERRO: biblioteca não carregou");
+    return;
+  }
+
+  // CRIA GRAFICO
+  const chart = LightweightCharts.createChart(graficoDiv, {
+    width: graficoDiv.clientWidth,
+    height: 420,
+    layout: {
+      background: { color: "#0d1117" },
+      textColor: "#fff"
+    },
+    grid: {
+      vertLines: { color: "#1f2937" },
+      horzLines: { color: "#1f2937" }
+    }
+  });
+
+  const candles = chart.addCandlestickSeries();
+
+  // RESPONSIVO
+  window.addEventListener("resize", () => {
+    chart.applyOptions({ width: graficoDiv.clientWidth });
+  });
+
+  // ======================
+  // DADOS INICIAIS
+  // ======================
+
+  async function carregarVelas() {
+    try {
+      const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=100`);
+      const data = await res.json();
+
+      const formatado = data.map(v => ({
+        time: v[0] / 1000,
+        open: +v[1],
+        high: +v[2],
+        low: +v[3],
+        close: +v[4]
+      }));
+
+      candles.setData(formatado);
+
+    } catch {
+      console.log("API falhou → fake");
+
+      let base = 30000;
+      let fake = [];
+
+      for (let i = 0; i < 100; i++) {
+        let open = base;
+        let close = open + (Math.random() - 0.5) * 500;
+
+        fake.push({
+          time: Math.floor(Date.now()/1000) - (100 - i)*60,
+          open,
+          high: Math.max(open, close) + 100,
+          low: Math.min(open, close) - 100,
+          close
+        });
+
+        base = close;
+      }
+
+      candles.setData(fake);
+    }
+  }
+
+  carregarVelas();
+
+  // ======================
+  // TEMPO REAL
+  // ======================
+
+  setInterval(async () => {
+    try {
+      const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=2`);
+      const data = await res.json();
+
+      const v = data[data.length - 1];
+
+      candles.update({
+        time: v[0] / 1000,
+        open: +v[1],
+        high: +v[2],
+        low: +v[3],
+        close: +v[4]
+      });
+
+    } catch {}
+  }, 2000);
+
+});
