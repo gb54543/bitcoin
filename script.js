@@ -41,7 +41,12 @@ async function pegarPreco() {
 
     const elPreco = document.getElementById("preco");
     if (elPreco) {
-      elPreco.innerText = "$ " + preco.toLocaleString();
+elPreco.innerText = "$ " + preco.toLocaleString();
+
+elPreco.style.transform = "scale(1.1)";
+setTimeout(() => {
+  elPreco.style.transform = "scale(1)";
+}, 150);
     }
 
     analisar(preco);
