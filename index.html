@@ -51,23 +51,36 @@
   <div id="chart"></div>
 
   <!-- ANALISE -->
-  <div class="analise">
+ <div class="analise">
 
-    <div id="sinal">CARREGANDO...</div>
+  <div id="sinal" class="big-sinal">ANALISANDO</div>
 
-    <div class="grid">
-      <div><span>Tendência</span><strong id="tendencia">-</strong></div>
-      <div><span>Força</span><strong id="forca">-</strong></div>
-      <div><span>RSI</span><strong id="rsi">-</strong></div>
-      <div><span>Momentum</span><strong id="momentum">-</strong></div>
-      <div><span>Volatilidade</span><strong id="vol">-</strong></div>
-      <div><span>Score</span><strong id="score">-</strong></div>
-    </div>
+  <div class="probabilidades">
+    <div>Alta: <strong id="probAlta">0%</strong></div>
+    <div>Baixa: <strong id="probBaixa">0%</strong></div>
+  </div>
+
+  <div class="grid">
+
+    <div><span>Tendência</span><strong id="tendencia">-</strong></div>
+    <div><span>Força</span><strong id="forca">-</strong></div>
+    <div><span>RSI</span><strong id="rsi">-</strong></div>
+    <div><span>Momentum</span><strong id="momentum">-</strong></div>
+    <div><span>Volatilidade</span><strong id="vol">-</strong></div>
+    <div><span>Score IA</span><strong id="score">-</strong></div>
 
   </div>
 
-</div>
+  <div class="zona">
+    <div>Zona de Compra: <strong id="buyZone">-</strong></div>
+    <div>Zona de Venda: <strong id="sellZone">-</strong></div>
+  </div>
 
+  <div class="leitura" id="leitura">
+    Carregando análise inteligente...
+  </div>
+
+</div>
 <script src="script.js"></script>
 </body>
 </html>
