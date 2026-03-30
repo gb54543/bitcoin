@@ -10,10 +10,9 @@ const pares = {
 let moedaAtual = "bitcoin";
 let historico = [];
 
-/* MOEDAS */
+/* trocar moeda */
 document.querySelectorAll(".moeda").forEach(btn => {
   btn.onclick = () => {
-
     document.querySelectorAll(".moeda").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
@@ -24,29 +23,27 @@ document.querySelectorAll(".moeda").forEach(btn => {
   };
 });
 
-/* GRÁFICO */
+/* gráfico */
 function criarGrafico() {
-  if (!window.TradingView) return;
-
   document.getElementById("chart").innerHTML = "";
 
   new TradingView.widget({
     symbol: "BINANCE:" + pares[moedaAtual],
     width: "100%",
-    height: 400,
+    height: 420,
     theme: "dark",
     interval: "1",
     container_id: "chart"
   });
 }
 
-/* ATUALIZAÇÃO */
+/* atualizar */
 async function atualizar() {
   try {
     const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pares[moedaAtual]}`);
     const data = await res.json();
 
-    const preco = parseFloat(data.price);
+    let preco = parseFloat(data.price);
 
     document.getElementById("preco").innerText = "$ " + preco.toFixed(2);
     document.getElementById("status").innerText = "Online";
@@ -58,60 +55,65 @@ async function atualizar() {
   }
 }
 
-/* ANALISE ESTÁVEL */
+/* ANALISE RÁPIDA */
 function analisar(preco) {
 
   historico.push(preco);
-  if (historico.length > 40) historico.shift();
+  if (historico.length > 50) historico.shift();
 
-  if (historico.length < 15) return;
+  if (historico.length < 8) return;
 
-  let curta = media(historico.slice(-7));
+  let media = arr => arr.reduce((a,b)=>a+b,0)/arr.length;
+
+  let curta = media(historico.slice(-5));
   let longa = media(historico);
 
-  let tendencia = curta > longa ? "Alta" : "Baixa";
-  let forca = Math.abs((curta - longa) / longa) * 100;
+  let tendencia = curta > longa ? "ALTA" : "BAIXA";
+  let forca = ((curta - longa)/longa)*100;
 
-  let acao = tendencia === "Alta" ? "COMPRAR" : "VENDER";
-  let classe = tendencia === "Alta" ? "compra" : "venda";
+  // RSI
+  let ganhos=0, perdas=0;
+  for(let i=1;i<historico.length;i++){
+    let d = historico[i]-historico[i-1];
+    if(d>0) ganhos+=d; else perdas-=d;
+  }
+  let rsi = 100 - (100/(1+(ganhos/(perdas||1))));
 
-  let ultimo = historico[historico.length - 2];
-  let momentum = preco > ultimo ? "Subindo" : "Caindo";
+  let momentum = preco > historico[historico.length-2] ? "FORTE" : "FRACO";
 
   let max = Math.max(...historico);
   let min = Math.min(...historico);
-  let vol = ((max - min) / min) * 100;
+  let vol = ((max-min)/min)*100;
 
-  document.getElementById("sinalBox").className = "sinal " + classe;
-  document.getElementById("sinalBox").innerText = acao;
+  let score = 0;
+  if(tendencia==="ALTA") score+=2;
+  if(forca>0.1) score+=2;
+  if(rsi<30) score+=2;
+  if(momentum==="FORTE") score+=2;
 
+  let sinal = "NEUTRO";
+  if(score>=6) sinal="COMPRA FORTE";
+  else if(score>=4) sinal="COMPRA";
+  else if(score<=2) sinal="VENDA";
+
+  document.getElementById("sinal").innerText = sinal;
   document.getElementById("tendencia").innerText = tendencia;
-  document.getElementById("forca").innerText = forca.toFixed(2) + "%";
+  document.getElementById("forca").innerText = forca.toFixed(2)+"%";
+  document.getElementById("rsi").innerText = rsi.toFixed(0);
   document.getElementById("momentum").innerText = momentum;
-  document.getElementById("volatilidade").innerText = vol.toFixed(2) + "%";
+  document.getElementById("vol").innerText = vol.toFixed(2)+"%";
+  document.getElementById("score").innerText = score;
 }
 
-function media(arr) {
-  return arr.reduce((a,b)=>a+b,0)/arr.length;
-}
+/* timer */
+setInterval(()=>{
+  let s=new Date().getSeconds();
+  document.getElementById("timer").innerText="00:"+String(60-s).padStart(2,"0");
+},1000);
 
-/* TIMER */
-setInterval(() => {
-  let s = new Date().getSeconds();
-  document.getElementById("timer").innerText =
-    "00:" + String(60 - s).padStart(2, "0");
-}, 1000);
-
-/* START */
-window.onload = () => {
-
-  let wait = setInterval(() => {
-    if (window.TradingView) {
-      criarGrafico();
-      clearInterval(wait);
-    }
-  }, 500);
-
+/* start */
+window.onload=()=>{
+  criarGrafico();
   atualizar();
-  setInterval(atualizar, 2000);
+  setInterval(atualizar,1500);
 };
