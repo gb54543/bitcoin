@@ -63,3 +63,13 @@ header {
   font-size: 14px;
   opacity: 0.8;
 }
+.grafico-full {
+  grid-column: span 2;
+  padding: 10px;
+}
+
+#chart {
+  height: 500px;
+  border-radius: 15px;
+  overflow: hidden;
+}
