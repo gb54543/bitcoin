@@ -303,3 +303,12 @@ select {
   border-radius: 50%;
   margin-right: 6px;
 }
+.container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 20px;
+}
+
+.grafico-full {
+  grid-column: span 2;
+}
