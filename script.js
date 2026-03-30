@@ -1,327 +1,148 @@
-// ======================
-// CONFIG
-// ======================
+// 🔗 PARES
+const pares = {
+  bitcoin: "BTCUSDT",
+  ethereum: "ETHUSDT",
+  solana: "SOLUSDT",
+  ripple: "XRPUSDT",
+  cardano: "ADAUSDT"
+};
 
-let moeda = "BTCUSDT";
+let moedaAtual = "bitcoin";
 let historico = [];
 
-// ======================
-// GRAFICO (CORRETO)
-// ======================
+// 📊 GRÁFICO (seguro)
+function criarGrafico() {
+  const el = document.getElementById("chart");
+  if (!el || typeof TradingView === "undefined") return;
 
-const graficoDiv = document.getElementById("grafico");
+  el.innerHTML = "";
 
-const chart = LightweightCharts.createChart(graficoDiv, {
-  width: graficoDiv.clientWidth,
-  height: 420,
-  layout: {
-    background: { color: "#0d1117" },
-    textColor: "#ffffff"
-  },
-  grid: {
-    vertLines: { color: "#1f2937" },
-    horzLines: { color: "#1f2937" }
-  }
-});
-
-const candles = chart.addCandlestickSeries();
-
-// RESPONSIVO (IMPORTANTE)
-window.addEventListener("resize", () => {
-  chart.applyOptions({
-    width: graficoDiv.clientWidth
+  new TradingView.widget({
+    width: "100%",
+    height: 500,
+    symbol: "BINANCE:" + pares[moedaAtual],
+    interval: "1",
+    theme: "dark",
+    style: "1",
+    container_id: "chart"
   });
-});
-
-// ======================
-// GERAR DADOS FAKE
-// ======================
-
-function gerarFake() {
-  let base = 30000;
-  let dados = [];
-
-  for (let i = 0; i < 100; i++) {
-    let open = base;
-    let close = open + (Math.random() - 0.5) * 500;
-    let high = Math.max(open, close) + 200;
-    let low = Math.min(open, close) - 200;
-
-    base = close;
-
-    dados.push({
-      time: Math.floor(Date.now() / 1000) - (100 - i) * 60,
-      open, high, low, close
-    });
-  }
-
-  candles.setData(dados);
-  chart.timeScale().fitContent();
 }
 
-// ======================
-// CARREGAR VELAS
-// ======================
-
-async function carregarVelas() {
+// 💰 PREÇO
+async function pegarPreco() {
   try {
-    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=100`);
+    const par = pares[moedaAtual];
+
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${par}`);
     const data = await res.json();
 
-    candles.setData(data.map(v => ({
-     time: Math.floor(v[0] / 1000)
-      open: +v[1],
-      high: +v[2],
-      low: +v[3],
-      close: +v[4]
-    })));
+    const preco = parseFloat(data.price);
 
-  } catch {
-    console.log("API falhou → usando fake");
-    gerarFake();
+    const elPreco = document.getElementById("preco");
+    if (elPreco) {
+      elPreco.innerText = "$ " + preco.toLocaleString();
+    }
+
+    analisar(preco);
+
+  } catch (e) {
+    console.log("Erro API:", e);
   }
 }
 
-carregarVelas();
-
-// ======================
-// UPDATE REALTIME
-// ======================
-
-setInterval(async () => {
-  try {
-    const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=2`);
-    const data = await res.json();
-
-    const v = data[data.length - 1];
-
-    candles.update({
-      time: v[0] / 1000,
-      open: +v[1],
-      high: +v[2],
-      low: +v[3],
-      close: +v[4]
-    });
-
-  } catch {
-    // fallback fake
-    let ultimo = historico[historico.length - 1] || 30000;
-    let novo = ultimo + (Math.random() - 0.5) * 100;
-
-    historico.push(novo);
-    if (historico.length > 50) historico.shift();
-  }
-}, 2000);
-
-// ======================
-// TROCAR MOEDA
-// ======================
-
-document.getElementById("moeda").addEventListener("change", e => {
-  moeda = e.target.value;
-  historico = [];
-  carregarVelas();
-});
-
-// ======================
-// ANALISE BASE
-// ======================
-
-function media(a){return a.reduce((x,y)=>x+y,0)/a.length}
-
-setInterval(async () => {
-
-  let preco;
-
-  try {
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${moeda}`);
-    const data = await res.json();
-    preco = +data.price;
-  } catch {
-    preco = historico[historico.length-1] || 30000;
-  }
-
+// 🧠 ANÁLISE BONITA
+function analisar(preco) {
   historico.push(preco);
-  if(historico.length>50) historico.shift();
+  if (historico.length > 40) historico.shift();
 
-  if(historico.length<10) return;
+  let media = historico.reduce((a,b)=>a+b,0)/historico.length;
 
-  let curta = media(historico.slice(-5));
-  let longa = media(historico);
+  let diff = ((preco - media)/media)*100;
+  let forca = Math.abs(diff);
 
-  let tendencia = curta>longa ? "ALTA 📈" : "BAIXA 📉";
-  let forca = ((curta-longa)/longa)*100;
-  let momentum = preco>historico[historico.length-2] ? "FORTE 🚀" : "FRACO 💤";
+  let tendencia = preco > media ? "Alta" : "Baixa";
+
+  let acao = "";
+  let classe = "";
+
+  if (preco > media) {
+    acao = forca > 0.3 ? "COMPRAR" : "COMPRA FRACA";
+    classe = "compra";
+  } else {
+    acao = forca > 0.3 ? "VENDER" : "VENDA FRACA";
+    classe = "venda";
+  }
+
+  let confianca =
+    forca > 0.5 ? "Alta"
+    : forca > 0.2 ? "Média"
+    : "Baixa";
+
+  let ultimo = historico[historico.length - 2] || preco;
+  let momentum = preco > ultimo ? "Subindo" : "Caindo";
 
   let max = Math.max(...historico);
   let min = Math.min(...historico);
-  let vol = ((max-min)/min)*100;
+  let volatilidade = ((max - min)/min)*100;
 
-  document.getElementById("tendencia").innerText = tendencia;
-  document.getElementById("forca").innerText = forca.toFixed(2)+"%";
-  document.getElementById("momentum").innerText = momentum;
-  document.getElementById("vol").innerText = vol.toFixed(2)+"%";
+  // 🎨 UI
+  const box = document.getElementById("sinalBox");
+  if (box) box.className = "sinal-box " + classe;
 
-},1000);
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+  };
 
-// ======================
-// ANALISE INTELIGENTE
-// ======================
+  set("acao", acao);
+  set("confianca", " • " + confianca);
+  set("tendencia", tendencia);
+  set("forca", forca.toFixed(2) + "%");
+  set("momentum", momentum);
+  set("volatilidade", volatilidade.toFixed(2) + "%");
+}
 
-document.getElementById("btnAI").onclick = () => {
+// ⏱️ TIMER
+function iniciarTimer() {
+  setInterval(() => {
+    const el = document.getElementById("timer");
+    if (!el) return;
 
-  if(historico.length < 20){
-    alert("Aguarde dados...");
-    return;
-  }
+    const agora = new Date();
+    const restante = 60 - agora.getSeconds();
 
-  let preco = historico[historico.length-1];
-  let max = Math.max(...historico);
-  let min = Math.min(...historico);
+    el.innerText = "00:" + String(restante).padStart(2, "0");
+  }, 1000);
+}
 
-  let suporte = min * 1.01;
-  let resistencia = max * 0.99;
+// 🔄 TROCAR MOEDA
+function iniciarSelect() {
+  const select = document.getElementById("moeda");
 
-  let direcao = preco > historico[historico.length-5] ? "ALTA 📈" : "BAIXA 📉";
+  if (!select) return;
 
-  let probAlta = direcao.includes("ALTA") ? 78 : 22;
-  let probBaixa = 100 - probAlta;
+  select.addEventListener("change", (e) => {
+    moedaAtual = e.target.value;
+    historico = [];
 
-  document.getElementById("probAlta").innerText = probAlta+"%";
-  document.getElementById("probBaixa").innerText = probBaixa+"%";
-  document.getElementById("buyZone").innerText = suporte.toFixed(2);
-  document.getElementById("sellZone").innerText = resistencia.toFixed(2);
-  document.getElementById("sinal").innerText = direcao.includes("ALTA") ? "COMPRA 🟢" : "VENDA 🔴";
-
-  document.getElementById("leitura").innerText =
-`📊 LEITURA AVANÇADA
-
-Mercado em ${direcao}
-Preço atual: ${preco.toFixed(2)}
-
-📍 Suporte: ${suporte.toFixed(2)}
-📍 Resistência: ${resistencia.toFixed(2)}
-
-🎯 Probabilidade:
-Alta: ${probAlta}%
-Baixa: ${probBaixa}%
-
-📢 Cenário provável:
-${direcao.includes("ALTA") ? 
-"Continuação de alta com possíveis correções curtas." :
-"Pressão vendedora com risco de novas quedas."}`;
-};
-// ESPERA HTML CARREGAR (ESSENCIAL)
-window.addEventListener("DOMContentLoaded", () => {
-
-  let moeda = "BTCUSDT";
-  let historico = [];
-
-  const graficoDiv = document.getElementById("grafico");
-
-  if (!graficoDiv) {
-    alert("ERRO: div grafico não encontrada");
-    return;
-  }
-
-  if (typeof LightweightCharts === "undefined") {
-    alert("ERRO: biblioteca não carregou");
-    return;
-  }
-
-  // CRIA GRAFICO
-  const chart = LightweightCharts.createChart(graficoDiv, {
-    width: graficoDiv.clientWidth,
-    height: 420,
-    layout: {
-      background: { color: "#0d1117" },
-      textColor: "#fff"
-    },
-    grid: {
-      vertLines: { color: "#1f2937" },
-      horzLines: { color: "#1f2937" }
-    }
+    criarGrafico();
+    pegarPreco();
   });
+}
 
-  const candles = chart.addCandlestickSeries({
-  upColor: "#00ff88",
-  downColor: "#ff3b3b",
-  borderVisible: false,
-  wickUpColor: "#00ff88",
-  wickDownColor: "#ff3b3b"
-});
+// 🚀 INICIAR TUDO
+window.addEventListener("load", () => {
+  iniciarSelect();
+  iniciarTimer();
 
-  // RESPONSIVO
-  window.addEventListener("resize", () => {
-    chart.applyOptions({ width: graficoDiv.clientWidth });
-  });
-
-  // ======================
-  // DADOS INICIAIS
-  // ======================
-
-  async function carregarVelas() {
-    try {
-      const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=100`);
-      const data = await res.json();
-
-      const formatado = data.map(v => ({
-        time: v[0] / 1000,
-        open: +v[1],
-        high: +v[2],
-        low: +v[3],
-        close: +v[4]
-      }));
-
-      candles.setData(formatado);
-
-    } catch {
-      console.log("API falhou → fake");
-
-      let base = 30000;
-      let fake = [];
-
-      for (let i = 0; i < 100; i++) {
-        let open = base;
-        let close = open + (Math.random() - 0.5) * 500;
-
-        fake.push({
-          time: Math.floor(Date.now()/1000) - (100 - i)*60,
-          open,
-          high: Math.max(open, close) + 100,
-          low: Math.min(open, close) - 100,
-          close
-        });
-
-        base = close;
-      }
-
-      candles.setData(fake);
+  // tenta criar gráfico até carregar
+  const intervaloGrafico = setInterval(() => {
+    if (typeof TradingView !== "undefined") {
+      criarGrafico();
+      clearInterval(intervaloGrafico);
     }
-  }
+  }, 500);
 
-  carregarVelas();
-
-  // ======================
-  // TEMPO REAL
-  // ======================
-
-  setInterval(async () => {
-    try {
-      const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${moeda}&interval=1m&limit=2`);
-      const data = await res.json();
-
-      const v = data[data.length - 1];
-
-      candles.update({
-        time: v[0] / 1000,
-        open: +v[1],
-        high: +v[2],
-        low: +v[3],
-        close: +v[4]
-      });
-
-    } catch {}
-  }, 2000);
-
+  pegarPreco();
+  setInterval(pegarPreco, 2000);
 });
