@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Crypto Analyzer</title>
+  <title>Crypto Analyzer Pro</title>
 
   <link rel="stylesheet" href="style.css">
   <script src="https://s3.tradingview.com/tv.js"></script>
@@ -12,7 +12,7 @@
 
 <div class="container">
 
-  <h1>📊 Crypto Analyzer</h1>
+  <h1>📊 Crypto Analyzer Pro</h1>
 
   <!-- MOEDAS -->
   <div class="card moedas">
@@ -21,37 +21,60 @@
     <button class="moeda" data-moeda="solana">SOL</button>
     <button class="moeda" data-moeda="ripple">XRP</button>
     <button class="moeda" data-moeda="cardano">ADA</button>
+    <button class="moeda" data-moeda="dogecoin">DOGE</button>
   </div>
 
   <!-- INFO -->
-  <div class="row">
+  <div class="info">
 
-    <div class="card pequeno">
+    <div class="card info-box">
       <p>💰 Preço</p>
       <strong id="preco">--</strong>
     </div>
 
-    <div class="card pequeno">
-      <p>⏱ Timer</p>
+    <div class="card info-box">
+      <p>⏱ Tempo</p>
       <strong id="timer">00:00</strong>
+    </div>
+
+    <div class="card info-box">
+      <p>⚡ Atualização</p>
+      <strong id="status">OK</strong>
     </div>
 
   </div>
 
   <!-- GRÁFICO -->
-  <div class="card">
+  <div class="card grafico">
     <div id="chart"></div>
   </div>
 
   <!-- ANALISE -->
-  <div class="card">
-    <div id="sinalBox" class="sinal-box">...</div>
+  <div class="card analise">
+    <div id="sinalBox" class="sinal">ANALISANDO...</div>
 
-    <div class="stats">
-      <div>Tendência: <span id="tendencia">-</span></div>
-      <div>Força: <span id="forca">-</span></div>
-      <div>Momentum: <span id="momentum">-</span></div>
-      <div>Volatilidade: <span id="volatilidade">-</span></div>
+    <div class="grid">
+
+      <div>
+        <span>Tendência</span>
+        <strong id="tendencia">-</strong>
+      </div>
+
+      <div>
+        <span>Força</span>
+        <strong id="forca">-</strong>
+      </div>
+
+      <div>
+        <span>Momentum</span>
+        <strong id="momentum">-</strong>
+      </div>
+
+      <div>
+        <span>Volatilidade</span>
+        <strong id="volatilidade">-</strong>
+      </div>
+
     </div>
   </div>
 
