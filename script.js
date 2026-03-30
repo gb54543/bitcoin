@@ -1,25 +1,32 @@
-// 📊 Gráfico TradingView
-new TradingView.widget({
-  "width": "100%",
-  "height": 400,
-  "symbol": "BINANCE:BTCUSDT",
-  "interval": "5",
-  "theme": "dark",
-  "container_id": "chart"
-});
+let moedaAtual = "bitcoin";
+let simboloAtual = "BTCUSDT";
 
-// 🔥 Buscar preço REAL
+// 🔄 trocar gráfico
+function carregarGrafico() {
+  document.getElementById("chart").innerHTML = "";
+
+  new TradingView.widget({
+    "width": "100%",
+    "height": 400,
+    "symbol": "BINANCE:" + simboloAtual,
+    "interval": "5",
+    "theme": "dark",
+    "container_id": "chart"
+  });
+}
+
+// 🔥 pegar preço real
 async function pegarPreco() {
-  const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+  const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${moedaAtual}&vs_currencies=usd`);
   const data = await res.json();
 
-  const preco = data.bitcoin.usd;
+  const preco = data[moedaAtual].usd;
   document.getElementById("preco").innerText = "$ " + preco;
 
   analisar(preco);
 }
 
-// 🧠 Lógica de análise (simples mas melhor)
+// 🧠 análise simples
 let historico = [];
 
 function analisar(preco) {
@@ -34,14 +41,31 @@ function analisar(preco) {
   let sinal = "";
 
   if (preco > media) {
-    sinal = "🟢 Tendência de ALTA (possível compra)";
+    sinal = "🟢 Alta (possível compra)";
   } else {
-    sinal = "🔴 Tendência de BAIXA (possível venda)";
+    sinal = "🔴 Baixa (possível venda)";
   }
 
   document.getElementById("sinal").innerText = sinal;
 }
 
-// Atualiza a cada 10s
+// 🎯 trocar moeda
+document.getElementById("moeda").addEventListener("change", (e) => {
+  moedaAtual = e.target.value;
+
+  historico = [];
+
+  if (moedaAtual === "bitcoin") simboloAtual = "BTCUSDT";
+  if (moedaAtual === "ethereum") simboloAtual = "ETHUSDT";
+  if (moedaAtual === "solana") simboloAtual = "SOLUSDT";
+  if (moedaAtual === "ripple") simboloAtual = "XRPUSDT";
+  if (moedaAtual === "cardano") simboloAtual = "ADAUSDT";
+
+  carregarGrafico();
+  pegarPreco();
+});
+
+// iniciar
+carregarGrafico();
 setInterval(pegarPreco, 10000);
 pegarPreco();
