@@ -376,3 +376,20 @@ body {
 .op.venda {
   border-left: 4px solid #ef4444;
 }
+.btn-op {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #3b82f6;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  z-index: 10;
+  position: relative;
+}
+
+.btn-op:active {
+  transform: scale(0.97);
+}
