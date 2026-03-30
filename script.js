@@ -385,3 +385,9 @@ function operacaoInteligente() {
 
   renderOperacaoIA(resultado);
 }
+window.addEventListener("load", () => {
+  const btnOp = document.getElementById("btnOp");
+  if (btnOp) {
+    btnOp.onclick = operacaoInteligente;
+  }
+});
