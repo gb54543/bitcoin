@@ -56,6 +56,7 @@ function gerarFake() {
   }
 
   candles.setData(dados);
+  chart.timeScale().fitContent();
 }
 
 // ======================
@@ -68,7 +69,7 @@ async function carregarVelas() {
     const data = await res.json();
 
     candles.setData(data.map(v => ({
-      time: v[0] / 1000,
+     time: Math.floor(v[0] / 1000)
       open: +v[1],
       high: +v[2],
       low: +v[3],
@@ -242,7 +243,13 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const candles = chart.addCandlestickSeries();
+  const candles = chart.addCandlestickSeries({
+  upColor: "#00ff88",
+  downColor: "#ff3b3b",
+  borderVisible: false,
+  wickUpColor: "#00ff88",
+  wickDownColor: "#ff3b3b"
+});
 
   // RESPONSIVO
   window.addEventListener("resize", () => {
