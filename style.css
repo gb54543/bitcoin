@@ -1,82 +1,107 @@
 body {
+  margin: 0;
+  font-family: Arial;
   background: #0f0f1a;
   color: white;
-  font-family: Arial;
-  margin: 0;
 }
 
 .container {
-  max-width: 900px;
+  max-width: 1100px;
   margin: auto;
-  padding: 15px;
+  padding: 20px;
 }
 
 h1 {
   text-align: center;
-  font-size: 22px;
+  margin-bottom: 15px;
 }
 
-/* cards */
+/* CARDS */
 .card {
   background: #151528;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 10px;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
 }
 
-/* linha */
-.row {
-  display: flex;
-  gap: 10px;
-}
-
-.pequeno {
-  flex: 1;
-  text-align: center;
-}
-
-/* moedas */
+/* MOEDAS */
 .moedas {
   display: flex;
-  gap: 5px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .moeda {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #1f1f35;
   color: white;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .moeda.active {
   background: #6c5cff;
 }
 
-/* gráfico */
-#chart {
-  height: 320px;
+/* INFO */
+.info {
+  display: flex;
+  gap: 10px;
 }
 
-/* sinal */
-.sinal-box {
+.info-box {
+  flex: 1;
   text-align: center;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: bold;
-  margin-bottom: 10px;
 }
 
-.compra { background: #003322; color: #00ff88; }
-.venda { background: #330011; color: #ff4d6d; }
+.info-box strong {
+  font-size: 18px;
+}
 
-/* stats */
-.stats {
+/* GRÁFICO */
+.grafico #chart {
+  height: 400px;
+  border-radius: 10px;
+}
+
+/* ANALISE */
+.sinal {
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.compra {
+  background: #003322;
+  color: #00ff88;
+}
+
+.venda {
+  background: #330011;
+  color: #ff4d6d;
+}
+
+/* GRID */
+.grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  font-size: 13px;
+  gap: 10px;
+}
+
+.grid div {
+  background: #1f1f35;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.grid span {
+  font-size: 12px;
+  color: #aaa;
 }
