@@ -3,7 +3,8 @@ const pares = {
   ethereum: "ETHUSDT",
   solana: "SOLUSDT",
   ripple: "XRPUSDT",
-  cardano: "ADAUSDT"
+  cardano: "ADAUSDT",
+  dogecoin: "DOGEUSDT"
 };
 
 let moedaAtual = "bitcoin";
@@ -12,6 +13,7 @@ let historico = [];
 /* MOEDAS */
 document.querySelectorAll(".moeda").forEach(btn => {
   btn.onclick = () => {
+
     document.querySelectorAll(".moeda").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
@@ -31,14 +33,14 @@ function criarGrafico() {
   new TradingView.widget({
     symbol: "BINANCE:" + pares[moedaAtual],
     width: "100%",
-    height: 320,
+    height: 400,
     theme: "dark",
     interval: "1",
     container_id: "chart"
   });
 }
 
-/* ATUALIZAR */
+/* ATUALIZAÇÃO */
 async function atualizar() {
   try {
     const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pares[moedaAtual]}`);
@@ -46,69 +48,70 @@ async function atualizar() {
 
     const preco = parseFloat(data.price);
 
-    document.getElementById("preco").innerText =
-      "$ " + preco.toFixed(2);
+    document.getElementById("preco").innerText = "$ " + preco.toFixed(2);
+    document.getElementById("status").innerText = "Online";
 
     analisar(preco);
 
-  } catch {}
+  } catch {
+    document.getElementById("status").innerText = "Erro";
+  }
 }
 
-/* ANALISE MELHORADA (ESTÁVEL) */
+/* ANALISE ESTÁVEL */
 function analisar(preco) {
 
   historico.push(preco);
-  if (historico.length > 25) historico.shift();
+  if (historico.length > 40) historico.shift();
 
-  if (historico.length < 10) return;
+  if (historico.length < 15) return;
 
-  let mediaCurta = media(historico.slice(-5));
-  let mediaLonga = media(historico);
+  let curta = media(historico.slice(-7));
+  let longa = media(historico);
 
-  let tendencia = mediaCurta > mediaLonga ? "Alta" : "Baixa";
-  let forca = Math.abs((mediaCurta - mediaLonga)/mediaLonga)*100;
+  let tendencia = curta > longa ? "Alta" : "Baixa";
+  let forca = Math.abs((curta - longa) / longa) * 100;
 
   let acao = tendencia === "Alta" ? "COMPRAR" : "VENDER";
   let classe = tendencia === "Alta" ? "compra" : "venda";
 
-  let ultimo = historico[historico.length-2];
+  let ultimo = historico[historico.length - 2];
   let momentum = preco > ultimo ? "Subindo" : "Caindo";
 
   let max = Math.max(...historico);
   let min = Math.min(...historico);
-  let vol = ((max-min)/min)*100;
+  let vol = ((max - min) / min) * 100;
 
-  document.getElementById("sinalBox").className = "sinal-box " + classe;
+  document.getElementById("sinalBox").className = "sinal " + classe;
   document.getElementById("sinalBox").innerText = acao;
 
   document.getElementById("tendencia").innerText = tendencia;
-  document.getElementById("forca").innerText = forca.toFixed(2)+"%";
+  document.getElementById("forca").innerText = forca.toFixed(2) + "%";
   document.getElementById("momentum").innerText = momentum;
-  document.getElementById("volatilidade").innerText = vol.toFixed(2)+"%";
+  document.getElementById("volatilidade").innerText = vol.toFixed(2) + "%";
 }
 
-/* MEDIA */
-function media(arr){
+function media(arr) {
   return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
 /* TIMER */
-setInterval(()=>{
+setInterval(() => {
   let s = new Date().getSeconds();
   document.getElementById("timer").innerText =
-    "00:" + String(60 - s).padStart(2,"0");
-},1000);
+    "00:" + String(60 - s).padStart(2, "0");
+}, 1000);
 
 /* START */
 window.onload = () => {
 
-  let wait = setInterval(()=>{
-    if(window.TradingView){
+  let wait = setInterval(() => {
+    if (window.TradingView) {
       criarGrafico();
       clearInterval(wait);
     }
-  },500);
+  }, 500);
 
   atualizar();
-  setInterval(atualizar, 3000);
+  setInterval(atualizar, 2000);
 };
