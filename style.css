@@ -1,60 +1,100 @@
-body {
+ body {
   margin: 0;
-  font-family: Arial;
-  background: radial-gradient(circle at top, #0a0a14, #030308);
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #050510, #0a0a1f);
   color: white;
 }
 
+/* HEADER */
 header {
   text-align: center;
-  padding: 20px;
+  padding: 25px;
   font-size: 22px;
-  background: linear-gradient(90deg, #6a00ff, #a100ff);
-  box-shadow: 0 0 25px rgba(161, 0, 255, 0.6);
+  background: rgba(20, 20, 40, 0.6);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
+/* CONTAINER */
 .container {
   width: 90%;
   max-width: 900px;
   margin: auto;
 }
 
+/* CARD */
 .card {
-  background: rgba(20, 20, 40, 0.7);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
   margin: 20px 0;
   padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 0 20px rgba(106, 0, 255, 0.2);
+  border-radius: 18px;
   transition: 0.3s;
 }
 
 .card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 0 30px rgba(161, 0, 255, 0.4);
+  border: 1px solid rgba(161, 0, 255, 0.5);
+  box-shadow: 0 0 25px rgba(161, 0, 255, 0.3);
+}
+
+/* SELECT CUSTOM */
+.select-box {
+  position: relative;
 }
 
 select {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 14px;
+  border-radius: 12px;
   border: none;
-  background: #1c1c2e;
+  background: rgba(20,20,40,0.8);
   color: white;
   font-size: 16px;
+  appearance: none;
+  outline: none;
   cursor: pointer;
 }
 
-#preco {
-  font-size: 32px;
+.select-box i {
+  position: absolute;
+  right: 15px;
+  top: 16px;
+  pointer-events: none;
+}
+
+/* PREÇO */
+.destaque p {
+  font-size: 34px;
   font-weight: bold;
-  color: #00ffcc;
+  background: linear-gradient(90deg, #00ffcc, #00aaff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.sinal-box {
+/* SINAL */
+.sinal p {
   font-size: 20px;
+  font-weight: 500;
 }
 
+/* GRÁFICO */
 #chart {
   height: 400px;
+}
+
+/* ANIMAÇÃO */
+.card {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
