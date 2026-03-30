@@ -1,18 +1,28 @@
-body {
+/* RESET */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* FUNDO GERAL */
+body {
   font-family: 'Segoe UI', sans-serif;
-  background: radial-gradient(circle at top, #0f0f2a, #050510);
+  background: radial-gradient(circle at top, #0a0f1f, #05070d);
   color: #fff;
 }
 
+/* HEADER */
 header {
   text-align: center;
   padding: 20px;
   font-size: 22px;
   font-weight: bold;
-  background: linear-gradient(90deg, #6a00ff, #a100ff);
+  background: linear-gradient(90deg, #0f172a, #020617);
+  border-bottom: 1px solid #1e293b;
 }
 
+/* CONTAINER */
 .container {
   max-width: 1100px;
   margin: auto;
@@ -22,102 +32,146 @@ header {
   gap: 20px;
 }
 
+/* CARDS */
 .card {
-  background: #0f0f1f;
-  border-radius: 15px;
+  background: linear-gradient(145deg, #0b1220, #050814);
+  border-radius: 18px;
   padding: 20px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.5);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.6),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
   transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  padding: 1px;
+  background: linear-gradient(120deg, #1e3a8a, #2563eb, #3b82f6);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0.3;
 }
 
 .card:hover {
   transform: translateY(-5px);
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.8),
+    0 0 20px rgba(37, 99, 235, 0.2);
 }
 
-.destaque {
-  font-size: 28px;
-  font-weight: bold;
-  text-align: center;
+/* TITULOS */
+.card h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #93c5fd;
 }
 
-.sinal {
-  grid-column: span 2;
-}
-
-#chart {
-  height: 350px;
+/* SELECT */
+.select-box select {
+  width: 100%;
+  padding: 12px;
   border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* PREÇO */
+.destaque {
+  font-size: 32px;
+  text-align: center;
+  font-weight: bold;
+  color: #60a5fa;
+}
+
+/* TIMER */
+#timer {
+  font-size: 24px;
+  text-align: center;
+  color: #38bdf8;
+}
+
+/* GRAFICO */
+#grafico, #chart {
+  height: 500px;
+  border-radius: 15px;
   overflow: hidden;
+  background: #020617;
 }
 
-.green {
-  color: #00ff9f;
-}
-
-.red {
-  color: #ff4d4d;
-}
-
-.info {
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: 0.8;
-}
+/* GRID FULL */
 .grafico-full {
   grid-column: span 2;
   padding: 10px;
 }
 
-#chart {
-  height: 500px;
-  border-radius: 15px;
-  overflow: hidden;
-}
-.moedas {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+/* SINAL */
+.sinal {
+  grid-column: span 2;
 }
 
-.moeda {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #1e1e2f;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.moeda:hover {
-  background: #6c5cff;
-}
-
-.moeda.active {
-  background: linear-gradient(45deg, #6c5cff, #8f7bff);
-  font-weight: bold;
-}
-
-.upload-box {
-  display: flex;
-  gap: 10px;
+/* BOX DE SINAL */
+.sinal-box {
   margin-top: 10px;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+  background: linear-gradient(90deg, #1e293b, #020617);
+  border: 1px solid #1e293b;
 }
 
-.upload-box input {
-  color: white;
+/* COMPRA */
+.compra {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  color: #fff;
 }
 
-.upload-box button {
-  background: #6c5cff;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 8px;
-  color: white;
-  cursor: pointer;
+/* VENDA */
+.venda {
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+  color: #fff;
 }
 
-.upload-box button:hover {
-  opacity: 0.8;
+/* STATS */
+.stats {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  background: #020617;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #1e293b;
+}
+
+.stat span {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.stat strong {
+  display: block;
+  margin-top: 5px;
+  color: #e2e8f0;
+}
+
+/* ANIMAÇÃO SUAVE */
+.card, .sinal-box, select {
+  transition: all 0.3s ease;
 }
