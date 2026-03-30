@@ -1,44 +1,58 @@
 body {
-  font-family: Arial;
-  background: radial-gradient(circle at top, #0a0a14, #05050a);
-  color: white;
-  text-align: center;
   margin: 0;
+  font-family: Arial;
+  background: radial-gradient(circle at top, #0a0a14, #030308);
+  color: white;
 }
 
 header {
-  background: linear-gradient(90deg, #6a00ff, #a100ff);
+  text-align: center;
   padding: 20px;
-  font-size: 20px;
-  box-shadow: 0 0 20px rgba(161, 0, 255, 0.5);
+  font-size: 22px;
+  background: linear-gradient(90deg, #6a00ff, #a100ff);
+  box-shadow: 0 0 25px rgba(161, 0, 255, 0.6);
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
 }
 
 .card {
-  background: #111122;
-  margin: 20px auto;
+  background: rgba(20, 20, 40, 0.7);
+  backdrop-filter: blur(10px);
+  margin: 20px 0;
   padding: 20px;
-  width: 80%;
-  max-width: 600px;
   border-radius: 15px;
-  box-shadow: 0 0 15px rgba(106, 0, 255, 0.3);
+  box-shadow: 0 0 20px rgba(106, 0, 255, 0.2);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 30px rgba(161, 0, 255, 0.4);
 }
 
 select {
-  padding: 10px;
+  width: 100%;
+  padding: 12px;
   border-radius: 10px;
   border: none;
   background: #1c1c2e;
   color: white;
   font-size: 16px;
+  cursor: pointer;
 }
 
 #preco {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
+  color: #00ffcc;
 }
 
-.sinal {
-  font-size: 18px;
+.sinal-box {
+  font-size: 20px;
 }
 
 #chart {
