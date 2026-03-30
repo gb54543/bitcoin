@@ -1,4 +1,4 @@
-// 🔗 Pares
+// 🔗 PARES
 const pares = {
   bitcoin: "BTCUSDT",
   ethereum: "ETHUSDT",
@@ -10,29 +10,25 @@ const pares = {
 let moedaAtual = "bitcoin";
 let historico = [];
 
-// 📊 GRÁFICO (SEM FICAR RECRIANDO TODA HORA)
-function criarGrafico(par) {
+// 📊 GRÁFICO (seguro)
+function criarGrafico() {
   const el = document.getElementById("chart");
-  if (!el) return;
+  if (!el || typeof TradingView === "undefined") return;
 
   el.innerHTML = "";
 
   new TradingView.widget({
     width: "100%",
-    height: 300,
-    symbol: "BINANCE:" + par,
+    height: 500,
+    symbol: "BINANCE:" + pares[moedaAtual],
     interval: "1",
     theme: "dark",
     style: "1",
-    locale: "br",
-    enable_publishing: false,
-    hide_top_toolbar: false,
-    withdateranges: true,
     container_id: "chart"
   });
 }
 
-// 💰 PREÇO EM TEMPO REAL (RÁPIDO)
+// 💰 PREÇO
 async function pegarPreco() {
   try {
     const par = pares[moedaAtual];
@@ -42,17 +38,19 @@ async function pegarPreco() {
 
     const preco = parseFloat(data.price);
 
-    const el = document.getElementById("preco");
-    if (el) el.innerText = "$ " + preco.toLocaleString();
+    const elPreco = document.getElementById("preco");
+    if (elPreco) {
+      elPreco.innerText = "$ " + preco.toLocaleString();
+    }
 
     analisar(preco);
 
   } catch (e) {
-    console.log("Erro:", e);
+    console.log("Erro API:", e);
   }
 }
 
-// 🧠 ANÁLISE
+// 🧠 ANÁLISE BONITA
 function analisar(preco) {
   historico.push(preco);
   if (historico.length > 40) historico.shift();
@@ -76,9 +74,9 @@ function analisar(preco) {
   }
 
   let confianca =
-    forca > 0.5 ? "Alta confiança"
-    : forca > 0.2 ? "Confiança média"
-    : "Baixa confiança";
+    forca > 0.5 ? "Alta"
+    : forca > 0.2 ? "Média"
+    : "Baixa";
 
   let ultimo = historico[historico.length - 2] || preco;
   let momentum = preco > ultimo ? "Subindo" : "Caindo";
@@ -87,19 +85,21 @@ function analisar(preco) {
   let min = Math.min(...historico);
   let volatilidade = ((max - min)/min)*100;
 
-  // 🎨 Atualizar UI bonita
+  // 🎨 UI
   const box = document.getElementById("sinalBox");
-  box.className = "sinal-box " + classe;
+  if (box) box.className = "sinal-box " + classe;
 
-  document.getElementById("acao").innerText = acao;
-  document.getElementById("confianca").innerText = " • " + confianca;
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value;
+  };
 
-  document.getElementById("tendencia").innerText = tendencia;
-  document.getElementById("forca").innerText = forca.toFixed(2) + "%";
-  document.getElementById("momentum").innerText = momentum;
-  document.getElementById("volatilidade").innerText = volatilidade.toFixed(2) + "%";
-}
-  }
+  set("acao", acao);
+  set("confianca", " • " + confianca);
+  set("tendencia", tendencia);
+  set("forca", forca.toFixed(2) + "%");
+  set("momentum", momentum);
+  set("volatilidade", volatilidade.toFixed(2) + "%");
 }
 
 // ⏱️ TIMER
@@ -115,24 +115,34 @@ function iniciarTimer() {
   }, 1000);
 }
 
-// 🔄 TROCA MOEDA
-const select = document.getElementById("moeda");
-if (select) {
+// 🔄 TROCAR MOEDA
+function iniciarSelect() {
+  const select = document.getElementById("moeda");
+
+  if (!select) return;
+
   select.addEventListener("change", (e) => {
     moedaAtual = e.target.value;
     historico = [];
 
-    criarGrafico(pares[moedaAtual]);
+    criarGrafico();
     pegarPreco();
   });
 }
 
-// 🚀 INIT
-window.onload = () => {
-  criarGrafico(pares[moedaAtual]);
-  pegarPreco();
+// 🚀 INICIAR TUDO
+window.addEventListener("load", () => {
+  iniciarSelect();
   iniciarTimer();
 
-  // ⚡ ATUALIZA RÁPIDO (1.5s)
-  setInterval(pegarPreco, 1500);
-};
+  // tenta criar gráfico até carregar
+  const intervaloGrafico = setInterval(() => {
+    if (typeof TradingView !== "undefined") {
+      criarGrafico();
+      clearInterval(intervaloGrafico);
+    }
+  }, 500);
+
+  pegarPreco();
+  setInterval(pegarPreco, 2000);
+});
