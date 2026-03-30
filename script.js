@@ -117,8 +117,26 @@ function iniciarTimer() {
 
 // 🔄 TROCAR MOEDA
 function iniciarSelect() {
-  const select = document.getElementById("moeda");
+function iniciarSelect() {
+  document.addEventListener("change", (e) => {
 
+    if (e.target && e.target.id === "moeda") {
+
+      moedaAtual = e.target.value;
+      historico = [];
+
+      console.log("Moeda trocada para:", moedaAtual);
+
+      // recria gráfico FORÇADO
+      setTimeout(() => {
+        criarGrafico();
+      }, 100);
+
+      pegarPreco();
+    }
+
+  });
+}
   if (!select) return;
 
   select.addEventListener("change", (e) => {
