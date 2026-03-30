@@ -1,170 +1,82 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
 body {
   background: #0f0f1a;
   color: white;
+  font-family: Arial;
+  margin: 0;
 }
 
-/* HEADER */
-header {
-  padding: 20px;
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 15px;
+}
+
+h1 {
   text-align: center;
-  background: #151528;
-  border-bottom: 1px solid #222;
-}
-
-header h1 {
   font-size: 22px;
 }
 
-/* LAYOUT */
-.container {
-  padding: 20px;
-  display: grid;
-  gap: 20px;
-}
-
-/* CARDS */
+/* cards */
 .card {
   background: #151528;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 10px;
 }
 
-.card h2 {
-  font-size: 16px;
-  margin-bottom: 15px;
-  color: #aaa;
+/* linha */
+.row {
+  display: flex;
+  gap: 10px;
 }
 
-/* PREÇO */
-.destaque p {
-  font-size: 28px;
-  font-weight: bold;
+.pequeno {
+  flex: 1;
+  text-align: center;
 }
 
-/* TIMER */
-#timer {
-  font-size: 24px;
-}
-
-/* MOEDAS */
+/* moedas */
 .moedas {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
 }
 
 .moeda {
   flex: 1;
-  min-width: 70px;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 8px;
   border: none;
+  border-radius: 6px;
   background: #1f1f35;
   color: white;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-.moeda:hover {
-  background: #6c5cff;
+  font-size: 13px;
 }
 
 .moeda.active {
-  background: linear-gradient(45deg, #6c5cff, #8f7bff);
-  font-weight: bold;
+  background: #6c5cff;
 }
 
-/* GRÁFICO GRANDE */
-.grafico-full #chart {
-  width: 100%;
-  height: 500px;
-  border-radius: 10px;
-  overflow: hidden;
+/* gráfico */
+#chart {
+  height: 320px;
 }
 
-/* ANALISE */
+/* sinal */
 .sinal-box {
-  padding: 15px;
-  border-radius: 12px;
   text-align: center;
-  font-size: 20px;
+  padding: 10px;
+  border-radius: 8px;
   font-weight: bold;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
-.compra {
-  background: rgba(0,255,100,0.1);
-  color: #00ff88;
-}
+.compra { background: #003322; color: #00ff88; }
+.venda { background: #330011; color: #ff4d6d; }
 
-.venda {
-  background: rgba(255,0,80,0.1);
-  color: #ff4d6d;
-}
-
-/* STATS */
+/* stats */
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.stat {
-  background: #1f1f35;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.stat span {
-  font-size: 12px;
-  color: #aaa;
-}
-
-.stat strong {
-  display: block;
-  margin-top: 5px;
-  font-size: 16px;
-}
-
-/* INDICADOR */
-.upload-area {
-  border: 2px dashed #6c5cff;
-  padding: 20px;
-  border-radius: 15px;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.upload-area:hover {
-  background: rgba(108,92,255,0.1);
-}
-
-.upload-area input {
-  display: none;
-}
-
-.btn-indicador {
-  margin-top: 10px;
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(45deg, #6c5cff, #8f7bff);
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.btn-indicador:hover {
-  opacity: 0.8;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 13px;
 }
