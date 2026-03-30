@@ -175,3 +175,19 @@ header {
 .card, .sinal-box, select {
   transition: all 0.3s ease;
 }
+.select-box {
+  position: relative;
+  z-index: 5;
+}
+
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+}
