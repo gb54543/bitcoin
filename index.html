@@ -2,116 +2,55 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Trader AI</title>
+<title>Trader AI Pro</title>
+
+<link rel="stylesheet" href="style.css">
 
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f0f0f;
-  color: white;
-}
-
-.container {
-  max-width: 1000px;
-  margin: auto;
-  padding: 15px;
-}
-
-.topo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-select {
-  padding: 6px;
-  border-radius: 6px;
-  border: none;
-  background: #1a1a1a;
-  color: white;
-}
-
-#grafico {
-  height: 350px;
-  margin-top: 10px;
-}
-
-.box {
-  background: #1a1a1a;
-  padding: 12px;
-  border-radius: 10px;
-  margin-top: 10px;
-}
-
-.btn {
-  width: 100%;
-  padding: 10px;
-  background: #6c5cff;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  margin-top: 10px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.item {
-  background: #141414;
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 14px;
-}
-</style>
 </head>
 
 <body>
 
 <div class="container">
 
-<div class="topo">
-<h2>Trader AI</h2>
+<header>
+<h1>Trader AI Pro</h1>
 
-<select onchange="trocarMoeda(this.value)">
+<select id="moeda">
 <option value="BTCUSDT">BTC</option>
 <option value="ETHUSDT">ETH</option>
 <option value="SOLUSDT">SOL</option>
 <option value="BNBUSDT">BNB</option>
 <option value="XRPUSDT">XRP</option>
 </select>
-</div>
+</header>
 
 <div id="grafico"></div>
 
-<div class="box">
-<button class="btn" onclick="analiseInteligente()">Análise Inteligente</button>
+<div class="painel">
+
+<button id="btnAI">Análise Inteligente</button>
+
+<div class="grid">
+<div><b>Tendência</b><span id="tendencia">-</span></div>
+<div><b>Força</b><span id="forca">-</span></div>
+<div><b>Momentum</b><span id="momentum">-</span></div>
+<div><b>Volatilidade</b><span id="vol">-</span></div>
+<div><b>Prob Alta</b><span id="probAlta">-</span></div>
+<div><b>Prob Baixa</b><span id="probBaixa">-</span></div>
+<div><b>Compra</b><span id="buyZone">-</span></div>
+<div><b>Venda</b><span id="sellZone">-</span></div>
+<div><b>Sinal</b><span id="sinal">-</span></div>
 </div>
 
-<div class="box grid">
-<div class="item">Tendência: <span id="tendencia">-</span></div>
-<div class="item">Força: <span id="forca">-</span></div>
-<div class="item">Momentum: <span id="momentum">-</span></div>
-<div class="item">Volatilidade: <span id="vol">-</span></div>
-<div class="item">Prob. Alta: <span id="probAlta">-</span></div>
-<div class="item">Prob. Baixa: <span id="probBaixa">-</span></div>
-<div class="item">Zona Compra: <span id="buyZone">-</span></div>
-<div class="item">Zona Venda: <span id="sellZone">-</span></div>
-<div class="item">Sinal: <span id="sinal">-</span></div>
-</div>
-
-<div class="box">
-<div id="leitura">Clique em análise inteligente...</div>
+<div class="leitura" id="leitura">
+Clique em análise inteligente
 </div>
 
 </div>
 
-<script>
+</div>
 
+<script src="script.js"></script>
+</body>
+</html>
