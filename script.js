@@ -145,8 +145,7 @@ function esperarGrafico() {
     setTimeout(esperarGrafico, 500);
   }
 }
-  }
-}, 500);
+
   }
 }
 
