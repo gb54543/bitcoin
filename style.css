@@ -13,7 +13,6 @@ let historico = [];
 /* MOEDAS */
 document.querySelectorAll(".moeda").forEach(btn => {
   btn.onclick = () => {
-
     document.querySelectorAll(".moeda").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
@@ -26,21 +25,19 @@ document.querySelectorAll(".moeda").forEach(btn => {
 
 /* GRÁFICO */
 function criarGrafico() {
-  if (!window.TradingView) return;
-
   document.getElementById("chart").innerHTML = "";
 
   new TradingView.widget({
     symbol: "BINANCE:" + pares[moedaAtual],
     width: "100%",
-    height: 400,
+    height: 420,
     theme: "dark",
     interval: "1",
     container_id: "chart"
   });
 }
 
-/* ATUALIZAÇÃO */
+/* ATUALIZAÇÃO RÁPIDA */
 async function atualizar() {
   try {
     const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${pares[moedaAtual]}`);
@@ -58,29 +55,63 @@ async function atualizar() {
   }
 }
 
-/* ANALISE ESTÁVEL */
+/* ANALISE INTELIGENTE */
 function analisar(preco) {
 
   historico.push(preco);
-  if (historico.length > 40) historico.shift();
+  if (historico.length > 60) historico.shift();
 
-  if (historico.length < 15) return;
+  if (historico.length < 10) return;
 
-  let curta = media(historico.slice(-7));
+  let curta = media(historico.slice(-5));
   let longa = media(historico);
 
-  let tendencia = curta > longa ? "Alta" : "Baixa";
-  let forca = Math.abs((curta - longa) / longa) * 100;
+  let tendencia = curta > longa ? "ALTA" : "BAIXA";
+  let forca = ((curta - longa) / longa) * 100;
 
-  let acao = tendencia === "Alta" ? "COMPRAR" : "VENDER";
-  let classe = tendencia === "Alta" ? "compra" : "venda";
+  // RSI SIMPLES
+  let ganhos = 0;
+  let perdas = 0;
 
-  let ultimo = historico[historico.length - 2];
-  let momentum = preco > ultimo ? "Subindo" : "Caindo";
+  for (let i = 1; i < historico.length; i++) {
+    let diff = historico[i] - historico[i - 1];
+    if (diff > 0) ganhos += diff;
+    else perdas -= diff;
+  }
 
+  let rs = ganhos / (perdas || 1);
+  let rsi = 100 - (100 / (1 + rs));
+
+  // MOMENTUM
+  let momentum = preco > historico[historico.length - 2] ? "FORTE" : "FRACO";
+
+  // VOLATILIDADE
   let max = Math.max(...historico);
   let min = Math.min(...historico);
   let vol = ((max - min) / min) * 100;
+
+  // SCORE INTELIGENTE
+  let score = 0;
+
+  if (tendencia === "ALTA") score += 2;
+  if (forca > 0.2) score += 2;
+  if (rsi < 30) score += 2;
+  if (momentum === "FORTE") score += 2;
+  if (vol > 0.5) score += 1;
+
+  let acao = "NEUTRO";
+  let classe = "";
+
+  if (score >= 6) {
+    acao = "COMPRA FORTE";
+    classe = "compra";
+  } else if (score >= 4) {
+    acao = "COMPRA";
+    classe = "compra";
+  } else if (score <= 2) {
+    acao = "VENDA";
+    classe = "venda";
+  }
 
   document.getElementById("sinalBox").className = "sinal " + classe;
   document.getElementById("sinalBox").innerText = acao;
@@ -91,27 +122,14 @@ function analisar(preco) {
   document.getElementById("volatilidade").innerText = vol.toFixed(2) + "%";
 }
 
+/* MEDIA */
 function media(arr) {
   return arr.reduce((a,b)=>a+b,0)/arr.length;
 }
 
-/* TIMER */
-setInterval(() => {
-  let s = new Date().getSeconds();
-  document.getElementById("timer").innerText =
-    "00:" + String(60 - s).padStart(2, "0");
-}, 1000);
-
 /* START */
 window.onload = () => {
-
-  let wait = setInterval(() => {
-    if (window.TradingView) {
-      criarGrafico();
-      clearInterval(wait);
-    }
-  }, 500);
-
+  criarGrafico();
   atualizar();
-  setInterval(atualizar, 2000);
+  setInterval(atualizar, 1500); // MAIS RÁPIDO
 };
