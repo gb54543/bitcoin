@@ -61,7 +61,45 @@
   <!-- 🧠 Análise -->
   <div class="card sinal">
     <h2><i class="fa-solid fa-brain"></i> Análise</h2>
+<div class="card win-area">
+  <div class="win-header">
+    <div class="win-title">WIN PANEL</div>
+    <div class="win-sub">sinal operacional</div>
+  </div>
 
+  <button class="win-main-btn" id="btnPainelIA">ATIVAR PAINEL</button>
+
+  <div class="win-status-line" id="winStatus">IA pronta</div>
+
+  <div class="win-grid">
+    <div class="win-box">
+      <span>ATIVO</span>
+      <strong id="winAtivo">BTC/USDT</strong>
+    </div>
+
+    <div class="win-box">
+      <span>TIMEFRAME</span>
+      <strong id="winTimeframe">M1</strong>
+    </div>
+
+    <div class="win-box">
+      <span>ORDEM</span>
+      <strong id="winOrdem">-</strong>
+    </div>
+
+    <div class="win-box">
+      <span>HORÁRIO</span>
+      <strong id="winHorario">-</strong>
+    </div>
+  </div>
+
+  <div class="win-prob-box">
+    <span>PROBABILIDADE</span>
+    <strong id="winProb">--%</strong>
+  </div>
+
+  <button class="win-signal-btn" id="btnSinalIA">SINAL ENCONTRADO</button>
+</div>
     <!-- Ação principal -->
     <div class="sinal-box" id="sinalBox">
       <span id="acao">Carregando...</span>
