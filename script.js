@@ -180,9 +180,6 @@ function assinaturaMercadoAtual() {
   ].join("|");
 }
 
-const status = document.getElementById("statusIA");
-if (status) status.innerText = "IA analisando mercado...";
-
 function analisarOperacaoInteligente() {
   if (historico.length < 25) {
     return {
@@ -352,7 +349,7 @@ function operacaoInteligente() {
 
   renderOperacaoIA(resultado);
 }
-if (status) status.innerText = "Análise concluída";
+
 // 🚀 INICIAR TUDO
 window.addEventListener("load", () => {
   iniciarSelect();
